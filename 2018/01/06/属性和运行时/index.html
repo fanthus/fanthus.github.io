@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>属性和运行时 | fanthus&#39;s blog</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/logo.jpg">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-152x152.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3eaf7c">
+    <script async="true" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3512514942188386" crossorigin="anonymous"></script>
+    <script async="true" src="https://www.googletagmanager.com/gtag/js?id=G-MEH5F43SVB"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-MEH5F43SVB');</script>
+    <script>console.log("my name is fanthus, hope my blog bring new ideas to you.");</script>
+    <meta name="description" content="@property 的本质是什么?
+@property 和运行时有什么关系?
+@property 一个 demo
+
+property 的本质是什么
+
+@property 的本质就是成员变量加 getter 和 setter 方法。getter 和 setter 方法是编译器自动为我们生成的。我们也可以尝试去复写 getter 和 `se ...">
+    <meta name="theme-color" content="#3eaf7c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-TileImage" content="/icons/msapplication-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    
+    <link rel="preload" href="/assets/css/0.styles.232103a7.css" as="style"><link rel="preload" href="/assets/js/app.2cedb1d8.js" as="script"><link rel="preload" href="/assets/js/29.309f71c0.js" as="script"><link rel="preload" href="/assets/js/3.e78f3171.js" as="script"><link rel="preload" href="/assets/js/53.c4c4d1a2.js" as="script"><link rel="prefetch" href="/assets/js/10.4cd31608.js"><link rel="prefetch" href="/assets/js/100.3443112a.js"><link rel="prefetch" href="/assets/js/101.e0037931.js"><link rel="prefetch" href="/assets/js/102.f4c7589f.js"><link rel="prefetch" href="/assets/js/103.0df46cd4.js"><link rel="prefetch" href="/assets/js/104.17a0ee44.js"><link rel="prefetch" href="/assets/js/105.57832bba.js"><link rel="prefetch" href="/assets/js/106.680eda55.js"><link rel="prefetch" href="/assets/js/107.410f297e.js"><link rel="prefetch" href="/assets/js/108.fb80d3ad.js"><link rel="prefetch" href="/assets/js/109.699c7520.js"><link rel="prefetch" href="/assets/js/11.7393e510.js"><link rel="prefetch" href="/assets/js/110.d4f0aca9.js"><link rel="prefetch" href="/assets/js/111.372545eb.js"><link rel="prefetch" href="/assets/js/112.bc127403.js"><link rel="prefetch" href="/assets/js/113.414e616f.js"><link rel="prefetch" href="/assets/js/114.d8c4fe8d.js"><link rel="prefetch" href="/assets/js/115.279ec90c.js"><link rel="prefetch" href="/assets/js/116.c60ac54a.js"><link rel="prefetch" href="/assets/js/117.15c04390.js"><link rel="prefetch" href="/assets/js/118.f9d8228c.js"><link rel="prefetch" href="/assets/js/119.719d77b5.js"><link rel="prefetch" href="/assets/js/12.c35fa779.js"><link rel="prefetch" href="/assets/js/120.cf48f47a.js"><link rel="prefetch" href="/assets/js/121.4aad0ac7.js"><link rel="prefetch" href="/assets/js/122.15f2b5ef.js"><link rel="prefetch" href="/assets/js/123.4dea98c9.js"><link rel="prefetch" href="/assets/js/124.0152be90.js"><link rel="prefetch" href="/assets/js/125.ecf56222.js"><link rel="prefetch" href="/assets/js/126.50fe6660.js"><link rel="prefetch" href="/assets/js/127.28abe492.js"><link rel="prefetch" href="/assets/js/128.48a0862c.js"><link rel="prefetch" href="/assets/js/129.77b2b203.js"><link rel="prefetch" href="/assets/js/13.35658260.js"><link rel="prefetch" href="/assets/js/130.d0ef4952.js"><link rel="prefetch" href="/assets/js/131.55b00f57.js"><link rel="prefetch" href="/assets/js/14.4e33e6a2.js"><link rel="prefetch" href="/assets/js/15.345a84a1.js"><link rel="prefetch" href="/assets/js/16.3d596c76.js"><link rel="prefetch" href="/assets/js/17.3e2e1a7a.js"><link rel="prefetch" href="/assets/js/18.c8e88810.js"><link rel="prefetch" href="/assets/js/19.f0e3f187.js"><link rel="prefetch" href="/assets/js/20.cb5c866b.js"><link rel="prefetch" href="/assets/js/21.b83191ac.js"><link rel="prefetch" href="/assets/js/22.bea483cb.js"><link rel="prefetch" href="/assets/js/23.3877c278.js"><link rel="prefetch" href="/assets/js/24.0524a7e6.js"><link rel="prefetch" href="/assets/js/25.3f3c78fe.js"><link rel="prefetch" href="/assets/js/26.3f72710f.js"><link rel="prefetch" href="/assets/js/27.f35bb8e9.js"><link rel="prefetch" href="/assets/js/28.5e29b9fe.js"><link rel="prefetch" href="/assets/js/30.a60200be.js"><link rel="prefetch" href="/assets/js/31.c2accd33.js"><link rel="prefetch" href="/assets/js/32.41be2bbb.js"><link rel="prefetch" href="/assets/js/33.8447af66.js"><link rel="prefetch" href="/assets/js/34.122a4606.js"><link rel="prefetch" href="/assets/js/35.fa9f0fe8.js"><link rel="prefetch" href="/assets/js/36.ffc459c1.js"><link rel="prefetch" href="/assets/js/37.12421aeb.js"><link rel="prefetch" href="/assets/js/38.66884bf5.js"><link rel="prefetch" href="/assets/js/39.4901c209.js"><link rel="prefetch" href="/assets/js/4.41416bc4.js"><link rel="prefetch" href="/assets/js/40.726f0f90.js"><link rel="prefetch" href="/assets/js/41.1466329e.js"><link rel="prefetch" href="/assets/js/42.ad110115.js"><link rel="prefetch" href="/assets/js/43.42f6c87f.js"><link rel="prefetch" href="/assets/js/44.38a3ffda.js"><link rel="prefetch" href="/assets/js/45.54729d58.js"><link rel="prefetch" href="/assets/js/46.688f019f.js"><link rel="prefetch" href="/assets/js/47.069217c5.js"><link rel="prefetch" href="/assets/js/48.0227b0c3.js"><link rel="prefetch" href="/assets/js/49.7a3d3511.js"><link rel="prefetch" href="/assets/js/5.9be8c1b7.js"><link rel="prefetch" href="/assets/js/50.35d1d592.js"><link rel="prefetch" href="/assets/js/51.7e7b901a.js"><link rel="prefetch" href="/assets/js/52.f693d3ed.js"><link rel="prefetch" href="/assets/js/54.eab66332.js"><link rel="prefetch" href="/assets/js/55.7e80dbb1.js"><link rel="prefetch" href="/assets/js/56.1041c5f3.js"><link rel="prefetch" href="/assets/js/57.a7c1bc68.js"><link rel="prefetch" href="/assets/js/58.c07c376a.js"><link rel="prefetch" href="/assets/js/59.8b20d651.js"><link rel="prefetch" href="/assets/js/6.1724a888.js"><link rel="prefetch" href="/assets/js/60.417e91a2.js"><link rel="prefetch" href="/assets/js/61.4db451fd.js"><link rel="prefetch" href="/assets/js/62.8f0bdaac.js"><link rel="prefetch" href="/assets/js/63.911f46a9.js"><link rel="prefetch" href="/assets/js/64.60deeb3e.js"><link rel="prefetch" href="/assets/js/65.201e0e08.js"><link rel="prefetch" href="/assets/js/66.248f04bf.js"><link rel="prefetch" href="/assets/js/67.500ae9a1.js"><link rel="prefetch" href="/assets/js/68.a95fd5e5.js"><link rel="prefetch" href="/assets/js/69.24aaae86.js"><link rel="prefetch" href="/assets/js/7.934b58e4.js"><link rel="prefetch" href="/assets/js/70.ec2f6ce6.js"><link rel="prefetch" href="/assets/js/71.b454fdd6.js"><link rel="prefetch" href="/assets/js/72.74299778.js"><link rel="prefetch" href="/assets/js/73.3cd8645d.js"><link rel="prefetch" href="/assets/js/74.d5accf5c.js"><link rel="prefetch" href="/assets/js/75.2d01044b.js"><link rel="prefetch" href="/assets/js/76.f31f74e1.js"><link rel="prefetch" href="/assets/js/77.3b826970.js"><link rel="prefetch" href="/assets/js/78.b7547141.js"><link rel="prefetch" href="/assets/js/79.5d0ef470.js"><link rel="prefetch" href="/assets/js/8.2a195ce5.js"><link rel="prefetch" href="/assets/js/80.0b0b5a17.js"><link rel="prefetch" href="/assets/js/81.24f2588e.js"><link rel="prefetch" href="/assets/js/82.f8c84af4.js"><link rel="prefetch" href="/assets/js/83.7fff9a1b.js"><link rel="prefetch" href="/assets/js/84.c0208c2c.js"><link rel="prefetch" href="/assets/js/85.e363b25e.js"><link rel="prefetch" href="/assets/js/86.5837e9f1.js"><link rel="prefetch" href="/assets/js/87.3e2f38a0.js"><link rel="prefetch" href="/assets/js/88.d3958f6f.js"><link rel="prefetch" href="/assets/js/89.ec3fdee0.js"><link rel="prefetch" href="/assets/js/9.c0adb174.js"><link rel="prefetch" href="/assets/js/90.94654c43.js"><link rel="prefetch" href="/assets/js/91.76b106e7.js"><link rel="prefetch" href="/assets/js/92.69e5bf8b.js"><link rel="prefetch" href="/assets/js/93.3d4a8f29.js"><link rel="prefetch" href="/assets/js/94.202d1036.js"><link rel="prefetch" href="/assets/js/95.002d5790.js"><link rel="prefetch" href="/assets/js/96.044893c5.js"><link rel="prefetch" href="/assets/js/97.c6dec31d.js"><link rel="prefetch" href="/assets/js/98.20673f07.js"><link rel="prefetch" href="/assets/js/99.fa4a2cf2.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.91ff346d.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.232103a7.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">fanthus's blog </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">Blog</a></li><li class="nav-item"><a href="/tag/" class="nav-link">Tags</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">fanthus's blog </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">Blog</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">Tags</a></li> <li class="mobile-nav-item"><!----></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        属性和运行时
+      </h1> <div class="post-meta"><!----> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2018-01-06T17:30:03.000Z">
+      Sat Jan 06 2018
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/iOS" data-v-42ccfcd5><span data-v-42ccfcd5>iOS</span></a></li><li class="post-tag" data-v-42ccfcd5><a href="/tag/Objective-C" data-v-42ccfcd5><span data-v-42ccfcd5>Objective-C</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><ol><li><code>@property</code> 的本质是什么?</li> <li><code>@property</code> 和运行时有什么关系?</li> <li><code>@property</code> 一个 demo</li></ol> <h1 id="property-的本质是什么"><a href="#property-的本质是什么" class="header-anchor">#</a> <code>property</code> 的本质是什么</h1> <p><code>@property</code> 的本质就是成员变量加 <code>getter</code> 和 <code>setter</code> 方法。<code>getter</code> 和 <code>setter</code> 方法是编译器自动为我们生成的。我们也可以尝试去复写 <code>getter</code> 和 <code>setter</code> 方法，在设置成员变量前后增加一些我们想要的业务逻辑。</p> <p><code>@property</code> 有不同的 <code>attribute</code> : <code>readonly</code>,<code>atomic</code>,<code>nonatomic</code> 等等。编译器会根据不同的 <code>attribute</code> 生成不同的 <code>getter</code> 和 <code>setter</code> 方法</p> <h1 id="property-和运行时有什么关系"><a href="#property-和运行时有什么关系" class="header-anchor">#</a> <code>property</code> 和运行时有什么关系?</h1> <p>来看下运行时系统对 <code>property</code> 相关类型的定义</p> <div class="language- extra-class"><pre class="language-text"><code>template &lt;typename Element, typename List, uint32_t FlagMask&gt;
+struct property_list_t : entsize_list_tt&lt;property_t, property_list_t, 0&gt; {
+};
+
+typedef struct property_t *objc_property_t;
+struct property_t {
+    const char *name;
+    const char *attributes;
+};
+
+/// Defines a property attribute
+typedef struct {
+    const char *name;           /**&lt; The name of the attribute */
+    const char *value;          /**&lt; The value of the attribute (usually empty) */
+} objc_property_attribute_t;
+
+</code></pre></div><blockquote><p><code>entsize_list_tt</code> 是通过 <code>C++</code> 的容器类，提供了容器类的基本方法，通过这些基本方法可以管理数据并以遍历的方式获取容器内的数据。<code>property_list_t</code> 是管理 <code>property_t</code> 的一个属性类型。</p></blockquote> <p>了解了基本数据类型之后，我们来讨论几个问题</p> <h2 id="类是怎么获取到-property-的"><a href="#类是怎么获取到-property-的" class="header-anchor">#</a> 类是怎么获取到 <code>@property</code> 的?</h2> <p>看源码及注释</p> <div class="language- extra-class"><pre class="language-text"><code>objc_property_t class_getProperty(Class cls, const char *name)
+{
+    .......
+    //依次遍历父类
+    for ( ; cls; cls = cls-&gt;superclass) {
+        //遍历当前类的属性列表
+        for (auto&amp; prop : cls-&gt;data()-&gt;properties) {
+            //比较字符串如果相等就返回当前的 property
+            if (0 == strcmp(name, prop.name)) {
+                return (objc_property_t)&amp;prop;
+            }
+        }
+    }
+
+    return nil;
+}
+</code></pre></div><h2 id="类是怎么增加-property-的"><a href="#类是怎么增加-property-的" class="header-anchor">#</a> 类是怎么增加 <code>property</code> 的?</h2> <p>看源码及注释</p> <div class="language- extra-class"><pre class="language-text"><code>static bool _class_addProperty(Class cls, const char *name,
+                   const objc_property_attribute_t *attrs, unsigned int count,
+                   bool replace)
+{
+    if (!cls) return NO;
+    if (!name) return NO;
+    //先从当前类获取指定名称的 property，如果有而且 caller 不想替换则直接返回
+    property_t *prop = class_getProperty(cls, name);
+    if (prop  &amp;&amp;  !replace) {
+        // already exists, refuse to replace
+        return NO;
+    }
+    //替换当前 property 流程，其实就是把 property 相关的 attributes 进行替换。
+    else if (prop) {
+        // replace existing
+        rwlock_writer_t lock(runtimeLock);
+        try_free(prop-&gt;attributes);
+        //参数 count 是 attrs 的数量。
+        prop-&gt;attributes = copyPropertyAttributeString(attrs, count);
+        return YES;
+    }
+    else {
+        //为新的 property 分配空空间。值得注意的是这里并不是直接分配的 property 而是通过 property_list 进行操作的。
+        property_list_t *proplist = (property_list_t *)malloc(sizeof(*proplist));
+        proplist-&gt;count = 1;
+        proplist-&gt;entsizeAndFlags = sizeof(proplist-&gt;first);
+        proplist-&gt;first.name = strdupIfMutable(name);
+        proplist-&gt;first.attributes = copyPropertyAttributeString(attrs, count);
+        //cls-&gt;data() 拿到 class_rw_t 结构体，结构体里的 properties 是 property_array_t 类型，将新的 property 加入到 property 数组中。
+        cls-&gt;data()-&gt;properties.attachLists(&amp;proplist, 1);
+
+        return YES;
+    }
+}
+</code></pre></div><h2 id="property-和成员变量是怎么对应起来的"><a href="#property-和成员变量是怎么对应起来的" class="header-anchor">#</a> <code>property</code> 和成员变量是怎么对应起来的？</h2> <p>其实是在编译这一步就做好了。</p> <div class="language- extra-class"><pre class="language-text"><code>@interface Fan : NSObject
+@property (nonatomic,strong) NSString *name;
+@end
+.....
+</code></pre></div><p>编译 clang -rewrite-objc main.m 之后结果</p> <div class="language- extra-class"><pre class="language-text"><code>typedef struct objc_object Fan;
+
+extern &quot;C&quot; unsigned long OBJC_IVAR_$_Fan$_name;
+struct Fan_IMPL {
+	struct NSObject_IMPL NSObject_IVARS;
+	NSString *_name;
+};
+// @property (atomic,strong) NSString *name;
+/* @end */
+...
+</code></pre></div><p>可以看到 <code>name</code> 属性变成了成员变量 <code>_name</code>。</p> <h2 id="property-一个-demo"><a href="#property-一个-demo" class="header-anchor">#</a> <code>property</code> 一个 demo</h2> <p>我们之前猜测不同 <code>property</code> 的 <code>attribute</code> 会对编译器造成影响，即生成出来的 <code>setter</code> 和 <code>getter</code> 方法可能不同，比如 <code>atomic</code> 的 <code>setter</code> 方法可能会有锁的实现，于是我补充了上面源码的 <code>getter</code> 和 <code>setter</code> 实现：</p> <div class="language- extra-class"><pre class="language-text"><code>static NSString * _I_Fan_name(Fan * self, SEL _cmd) { return (*(NSString **)((char *)self + OBJC_IVAR_$_Fan$_name)); }
+static void _I_Fan_setName_(Fan * self, SEL _cmd, NSString *name) { (*(NSString **)((char *)self + OBJC_IVAR_$_Fan$_name)) = name; }
+</code></pre></div><p>发现 setter 并没有什么特别的地方...</p> <p>难道我的验证有问题吗？感觉不应该。我尝试在 demo 中给 <code>name</code> 属性赋值，并打了个符号断点 <code>objc_setProperty_atomic</code> 发现这个方法确实走了，所以 <code>clang</code> 出来的结果应该是有问题的。怎么生成更准确的编译结果我也不清楚。。</p> <p><img src="/assets/img/Jietu20180106-185957.a4a60542.png" alt="Jietu20180106-185957"></p> <p>你也许会问 <code>objc_setProperty_atomic</code> 这个是干什么用的，翻源码到 <code>objc-accessors.mm</code> 这个文件看，可以看到不同的修饰符走了不同的设置属性的方法比如 <code>objc_setProperty_nonatomic</code>，<code>objc_setProperty_atomic</code>，<code>objc_setProperty_atomic_copy</code> 最终他们都调用了 <code>reallySetProperty</code> 这个方法接收了众多参数，根据不同的参数，走了不同的执行流。</p> <div class="language- extra-class"><pre class="language-text"><code>static inline void reallySetProperty(id self, SEL _cmd, id newValue, ptrdiff_t offset, bool atomic, bool copy, bool mutableCopy)
+{
+    if (offset == 0) {
+        object_setClass(self, newValue);
+        return;
+    }
+    id oldValue;
+    //这里的 offset 其实就是上一步编译时候确定的。
+    id *slot = (id*) ((char*)self + offset);
+    if (copy) {
+        newValue = [newValue copyWithZone:nil];
+    } else if (mutableCopy) {
+        newValue = [newValue mutableCopyWithZone:nil];
+    } else {
+        if (*slot == newValue) return;
+        newValue = objc_retain(newValue);
+    }
+    if (!atomic) {
+        oldValue = *slot;
+        *slot = newValue;
+    } else {
+        //在这里看到 atomic 确实是使用自旋锁来对赋值进行了保护。
+        spinlock_t&amp; slotlock = PropertyLocks[slot];
+        slotlock.lock();
+        oldValue = *slot;
+        *slot = newValue;
+        slotlock.unlock();
+    }
+    objc_release(oldValue);
+}
+</code></pre></div><p>可以看到，属性机制的实现不仅靠编译时，运行时也起了很大的作用。</p> <p>一个思考，能否在运行时候动态添加属性呢？</p></div> <footer><!----> <hr> <!----></footer></article> <div class="sticker vuepress-toc"><div class="vuepress-toc-item vuepress-toc-h2 active"><a href="#类是怎么获取到-property-的" title="类是怎么获取到 @property 的?">类是怎么获取到 @property 的?</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#类是怎么增加-property-的" title="类是怎么增加 property 的?">类是怎么增加 property 的?</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#property-和成员变量是怎么对应起来的" title="property 和成员变量是怎么对应起来的？">property 和成员变量是怎么对应起来的？</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#property-一个-demo" title="property 一个 demo">property 一个 demo</a></div></div></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8></ul></div></footer></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.2cedb1d8.js" defer></script><script src="/assets/js/29.309f71c0.js" defer></script><script src="/assets/js/3.e78f3171.js" defer></script><script src="/assets/js/53.c4c4d1a2.js" defer></script>
+  </body>
+</html>

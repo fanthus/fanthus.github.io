@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Block 理解 | fanthus&#39;s blog</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/logo.jpg">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-152x152.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3eaf7c">
+    <script async="true" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3512514942188386" crossorigin="anonymous"></script>
+    <script async="true" src="https://www.googletagmanager.com/gtag/js?id=G-MEH5F43SVB"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-MEH5F43SVB');</script>
+    <script>console.log("my name is fanthus, hope my blog bring new ideas to you.");</script>
+    <meta name="description" content="本文将按照如下顺序逐个说明
+
+Block 的本质
+Block 捕获成员变量
+Block 的存储域以及内存生命周期分析
+Block 捕获成员变量的生命周期
+GCD 里面的 Block 分析
+MRC &amp; ARC 下 Block 内存管理区别
+Block weak 分析 / strongSelf 分析
+一些常问的关于 Block 的面试题回答
+
+本 ...">
+    <meta name="theme-color" content="#3eaf7c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-TileImage" content="/icons/msapplication-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    
+    <link rel="preload" href="/assets/css/0.styles.232103a7.css" as="style"><link rel="preload" href="/assets/js/app.2cedb1d8.js" as="script"><link rel="preload" href="/assets/js/29.309f71c0.js" as="script"><link rel="preload" href="/assets/js/3.e78f3171.js" as="script"><link rel="preload" href="/assets/js/32.41be2bbb.js" as="script"><link rel="prefetch" href="/assets/js/10.4cd31608.js"><link rel="prefetch" href="/assets/js/100.3443112a.js"><link rel="prefetch" href="/assets/js/101.e0037931.js"><link rel="prefetch" href="/assets/js/102.f4c7589f.js"><link rel="prefetch" href="/assets/js/103.0df46cd4.js"><link rel="prefetch" href="/assets/js/104.17a0ee44.js"><link rel="prefetch" href="/assets/js/105.57832bba.js"><link rel="prefetch" href="/assets/js/106.680eda55.js"><link rel="prefetch" href="/assets/js/107.410f297e.js"><link rel="prefetch" href="/assets/js/108.fb80d3ad.js"><link rel="prefetch" href="/assets/js/109.699c7520.js"><link rel="prefetch" href="/assets/js/11.7393e510.js"><link rel="prefetch" href="/assets/js/110.d4f0aca9.js"><link rel="prefetch" href="/assets/js/111.372545eb.js"><link rel="prefetch" href="/assets/js/112.bc127403.js"><link rel="prefetch" href="/assets/js/113.414e616f.js"><link rel="prefetch" href="/assets/js/114.d8c4fe8d.js"><link rel="prefetch" href="/assets/js/115.279ec90c.js"><link rel="prefetch" href="/assets/js/116.c60ac54a.js"><link rel="prefetch" href="/assets/js/117.15c04390.js"><link rel="prefetch" href="/assets/js/118.f9d8228c.js"><link rel="prefetch" href="/assets/js/119.719d77b5.js"><link rel="prefetch" href="/assets/js/12.c35fa779.js"><link rel="prefetch" href="/assets/js/120.cf48f47a.js"><link rel="prefetch" href="/assets/js/121.4aad0ac7.js"><link rel="prefetch" href="/assets/js/122.15f2b5ef.js"><link rel="prefetch" href="/assets/js/123.4dea98c9.js"><link rel="prefetch" href="/assets/js/124.0152be90.js"><link rel="prefetch" href="/assets/js/125.ecf56222.js"><link rel="prefetch" href="/assets/js/126.50fe6660.js"><link rel="prefetch" href="/assets/js/127.28abe492.js"><link rel="prefetch" href="/assets/js/128.48a0862c.js"><link rel="prefetch" href="/assets/js/129.77b2b203.js"><link rel="prefetch" href="/assets/js/13.35658260.js"><link rel="prefetch" href="/assets/js/130.d0ef4952.js"><link rel="prefetch" href="/assets/js/131.55b00f57.js"><link rel="prefetch" href="/assets/js/14.4e33e6a2.js"><link rel="prefetch" href="/assets/js/15.345a84a1.js"><link rel="prefetch" href="/assets/js/16.3d596c76.js"><link rel="prefetch" href="/assets/js/17.3e2e1a7a.js"><link rel="prefetch" href="/assets/js/18.c8e88810.js"><link rel="prefetch" href="/assets/js/19.f0e3f187.js"><link rel="prefetch" href="/assets/js/20.cb5c866b.js"><link rel="prefetch" href="/assets/js/21.b83191ac.js"><link rel="prefetch" href="/assets/js/22.bea483cb.js"><link rel="prefetch" href="/assets/js/23.3877c278.js"><link rel="prefetch" href="/assets/js/24.0524a7e6.js"><link rel="prefetch" href="/assets/js/25.3f3c78fe.js"><link rel="prefetch" href="/assets/js/26.3f72710f.js"><link rel="prefetch" href="/assets/js/27.f35bb8e9.js"><link rel="prefetch" href="/assets/js/28.5e29b9fe.js"><link rel="prefetch" href="/assets/js/30.a60200be.js"><link rel="prefetch" href="/assets/js/31.c2accd33.js"><link rel="prefetch" href="/assets/js/33.8447af66.js"><link rel="prefetch" href="/assets/js/34.122a4606.js"><link rel="prefetch" href="/assets/js/35.fa9f0fe8.js"><link rel="prefetch" href="/assets/js/36.ffc459c1.js"><link rel="prefetch" href="/assets/js/37.12421aeb.js"><link rel="prefetch" href="/assets/js/38.66884bf5.js"><link rel="prefetch" href="/assets/js/39.4901c209.js"><link rel="prefetch" href="/assets/js/4.41416bc4.js"><link rel="prefetch" href="/assets/js/40.726f0f90.js"><link rel="prefetch" href="/assets/js/41.1466329e.js"><link rel="prefetch" href="/assets/js/42.ad110115.js"><link rel="prefetch" href="/assets/js/43.42f6c87f.js"><link rel="prefetch" href="/assets/js/44.38a3ffda.js"><link rel="prefetch" href="/assets/js/45.54729d58.js"><link rel="prefetch" href="/assets/js/46.688f019f.js"><link rel="prefetch" href="/assets/js/47.069217c5.js"><link rel="prefetch" href="/assets/js/48.0227b0c3.js"><link rel="prefetch" href="/assets/js/49.7a3d3511.js"><link rel="prefetch" href="/assets/js/5.9be8c1b7.js"><link rel="prefetch" href="/assets/js/50.35d1d592.js"><link rel="prefetch" href="/assets/js/51.7e7b901a.js"><link rel="prefetch" href="/assets/js/52.f693d3ed.js"><link rel="prefetch" href="/assets/js/53.c4c4d1a2.js"><link rel="prefetch" href="/assets/js/54.eab66332.js"><link rel="prefetch" href="/assets/js/55.7e80dbb1.js"><link rel="prefetch" href="/assets/js/56.1041c5f3.js"><link rel="prefetch" href="/assets/js/57.a7c1bc68.js"><link rel="prefetch" href="/assets/js/58.c07c376a.js"><link rel="prefetch" href="/assets/js/59.8b20d651.js"><link rel="prefetch" href="/assets/js/6.1724a888.js"><link rel="prefetch" href="/assets/js/60.417e91a2.js"><link rel="prefetch" href="/assets/js/61.4db451fd.js"><link rel="prefetch" href="/assets/js/62.8f0bdaac.js"><link rel="prefetch" href="/assets/js/63.911f46a9.js"><link rel="prefetch" href="/assets/js/64.60deeb3e.js"><link rel="prefetch" href="/assets/js/65.201e0e08.js"><link rel="prefetch" href="/assets/js/66.248f04bf.js"><link rel="prefetch" href="/assets/js/67.500ae9a1.js"><link rel="prefetch" href="/assets/js/68.a95fd5e5.js"><link rel="prefetch" href="/assets/js/69.24aaae86.js"><link rel="prefetch" href="/assets/js/7.934b58e4.js"><link rel="prefetch" href="/assets/js/70.ec2f6ce6.js"><link rel="prefetch" href="/assets/js/71.b454fdd6.js"><link rel="prefetch" href="/assets/js/72.74299778.js"><link rel="prefetch" href="/assets/js/73.3cd8645d.js"><link rel="prefetch" href="/assets/js/74.d5accf5c.js"><link rel="prefetch" href="/assets/js/75.2d01044b.js"><link rel="prefetch" href="/assets/js/76.f31f74e1.js"><link rel="prefetch" href="/assets/js/77.3b826970.js"><link rel="prefetch" href="/assets/js/78.b7547141.js"><link rel="prefetch" href="/assets/js/79.5d0ef470.js"><link rel="prefetch" href="/assets/js/8.2a195ce5.js"><link rel="prefetch" href="/assets/js/80.0b0b5a17.js"><link rel="prefetch" href="/assets/js/81.24f2588e.js"><link rel="prefetch" href="/assets/js/82.f8c84af4.js"><link rel="prefetch" href="/assets/js/83.7fff9a1b.js"><link rel="prefetch" href="/assets/js/84.c0208c2c.js"><link rel="prefetch" href="/assets/js/85.e363b25e.js"><link rel="prefetch" href="/assets/js/86.5837e9f1.js"><link rel="prefetch" href="/assets/js/87.3e2f38a0.js"><link rel="prefetch" href="/assets/js/88.d3958f6f.js"><link rel="prefetch" href="/assets/js/89.ec3fdee0.js"><link rel="prefetch" href="/assets/js/9.c0adb174.js"><link rel="prefetch" href="/assets/js/90.94654c43.js"><link rel="prefetch" href="/assets/js/91.76b106e7.js"><link rel="prefetch" href="/assets/js/92.69e5bf8b.js"><link rel="prefetch" href="/assets/js/93.3d4a8f29.js"><link rel="prefetch" href="/assets/js/94.202d1036.js"><link rel="prefetch" href="/assets/js/95.002d5790.js"><link rel="prefetch" href="/assets/js/96.044893c5.js"><link rel="prefetch" href="/assets/js/97.c6dec31d.js"><link rel="prefetch" href="/assets/js/98.20673f07.js"><link rel="prefetch" href="/assets/js/99.fa4a2cf2.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.91ff346d.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.232103a7.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">fanthus's blog </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">Blog</a></li><li class="nav-item"><a href="/tag/" class="nav-link">Tags</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">fanthus's blog </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">Blog</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">Tags</a></li> <li class="mobile-nav-item"><!----></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        Block 理解
+      </h1> <div class="post-meta"><!----> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2018-04-07T10:05:25.000Z">
+      Sat Apr 07 2018
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/iOS" data-v-42ccfcd5><span data-v-42ccfcd5>iOS</span></a></li><li class="post-tag" data-v-42ccfcd5><a href="/tag/Objective-C" data-v-42ccfcd5><span data-v-42ccfcd5>Objective-C</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><p>本文将按照如下顺序逐个说明</p> <ol><li>Block 的本质</li> <li>Block 捕获成员变量</li> <li>Block 的存储域以及内存生命周期分析</li> <li>Block 捕获成员变量的生命周期</li> <li>GCD 里面的 Block 分析</li> <li>MRC &amp; ARC 下 Block 内存管理区别</li> <li>Block **weak 分析 / **strongSelf 分析</li> <li>一些常问的关于 Block 的面试题回答</li></ol> <p>本文不关注 Block 的语法，只尝试说明 Block 捕获变量的方式，Block 捕获的变量的生命周期以及 Block 自身的生命周期。最后对一些常见的自己的疑问进行一些梳理归纳。</p> <h2 id="block-的本质"><a href="#block-的本质" class="header-anchor">#</a> Block 的本质</h2> <p>使用 <code>clang -rewrite-objc main.m</code> 编译如下代码</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    void(^block)(void) = ^() { NSLog(@&quot;hello world&quot;); };
+    block();
+    return 0;
+}
+</code></pre></div><p>得到结果是</p> <div class="language- extra-class"><pre class="language-text"><code>struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int flags=0) {
+    impl.isa = &amp;_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+//---
+struct __block_impl {
+  void *isa;
+  int Flags;
+  int Reserved;
+  void *FuncPtr;
+};
+//---
+static struct __main_block_desc_0 {
+  size_t reserved;
+  size_t Block_size;
+} __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0)};
+//---
+int main(int argc, const char * argv[]) {
+    //初始化 block
+    void(*block)(void) = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA));
+    //执行 block 对应方法
+    ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
+    return 0;
+}
+//---
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+    NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_9w_q4lvthyn17v0cxxm5s7fsb500000gn_T_main_aef28d_mi_0);
+}
+</code></pre></div><p>从上面编译后的文件里可以看到一些信息<code>block</code>实现的主体就是<code>__main_block_impl_0</code>，这个结构体里面嵌套了一个名字为<code>__block_impl</code>的结构体以及名为<code>__main_block_desc_0</code>的结构体指针。闭包里面的代码部分被抽出来生成了一个 <code>C</code> 语言的函数实现 <code>__main_block_func_0</code>，注意的是这个函数的参数就是结构体本身，这么做有啥用呢？方法实现里根本没用到 <code>block</code> 实例啊，后面会用到的...</p> <p>说明一下这个 <code>__block_impl</code> 结构体:</p> <ul><li><code>__block_impl</code>结构体里面有<code>void *isa</code>成员变量，很眼熟对不对，这个就是<code>Objective-C</code>对象实现中的对象指针，所以我们通常认为<code>block</code>也算是<code>Objective-C</code>对象。</li> <li><code>__main_block_impl_0</code>初始化方法<code>impl.isa = &amp;_NSConcreteStackBlock;</code> Demo 里的 <code>block</code> 类型属于 <code>_NSConcreteStackBlock</code>。</li> <li><code>__block_impl</code>结构体里有函数指针 <code>FuncPtr</code>，在 <code>__main_block_impl_0</code> 初始化的时候指向<code>block</code>闭包里面函数的实现。</li></ul> <h2 id="block-捕获变量"><a href="#block-捕获变量" class="header-anchor">#</a> Block 捕获变量</h2> <h3 id="block-捕获普通类型自动变量"><a href="#block-捕获普通类型自动变量" class="header-anchor">#</a> Block 捕获普通类型自动变量</h3> <p><code>Block</code> 的一个强大之处在于能捕获变量，在执行闭包方法的时候利用外部捕获的变量得到一些想要的结果，这是怎么做到的？将 <code>demo</code> 稍作改动，添加一个自动变量，如下：</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    int a = 0;
+    void(^block)(void) = ^() { NSLog(@&quot;hello world a = %d&quot;,a); };
+    a = 3;
+    block();
+    return 0;
+}
+//执行结果如下
+hello world a = 0;
+</code></pre></div><p>继续使用 <code>clang -rewrite-objc main.m</code> 进行编译，得到如下结果（已精简）</p> <div class="language- extra-class"><pre class="language-text"><code>struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  int a;
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
+    impl.isa = &amp;_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+    int a = __cself-&gt;a; // bound by copy
+    NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_9w_q4lvthyn17v0cxxm5s7fsb500000gn_T_main_473c35_mi_0,a);
+}
+int main(int argc, const char * argv[]) {
+    int a = 0;
+    void(*block)(void) = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, a));
+    a = 3;
+    ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
+    return 0;
+}
+</code></pre></div><p>这次跟没有捕获成员变量时候比，在 <code>__main_block_impl_0</code> 结构体里多了一个成员变量 <code>a</code>，结合 <code>main.m</code> 实现以及 <code>__main_block_impl_0()</code> 的初始化方法可以看到这个成员变量 <code>a</code> 的初始化是依靠外部同名自动变量 <code>a</code> 的赋值，所以打印的时候会打印初始化 <code>block</code> 时候外部变量的 <code>a</code> 的值。如果在 block 初始化之后再次对外部自动变量 <code>a</code> 进行了修改，则 <code>block</code> 自动变量不会被修改。参考上面 demo 的执行结果。</p> <h3 id="block-捕获并修改普通类型自动变量-block-修饰符分析"><a href="#block-捕获并修改普通类型自动变量-block-修饰符分析" class="header-anchor">#</a> Block 捕获并修改普通类型自动变量/__block 修饰符分析</h3> <p>有一个值得思考的问题，如果我想要在 <code>block</code> 的闭包函数里修改外部变量的值该怎么做？目前的实现只是打印了 <code>block</code> 成员变量<code>a</code>的值，如果修改的话，我们也仅仅只能修改成员变量<code>a</code>的值，而没有途径修改外部变量的值。怎么办？一个方法就是在 <code>block</code> 内部做一个指针，指向外部自动变量 <code>a</code>,这样就能在执行方法的时候通过指针去修改外部变量的值。怎么样才能实现我们这个方案呢，<code>block</code> 提供了一个修饰符 <code>__block</code> 去修饰外部成员变量，当 <code>block</code> 捕获了带有 <code>__block</code> 修饰的外部成员变量的时候会自动在结构体内部生成一个引用外部变量的指针变量。如下 demo 所示：</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    __block int a = 0; ①
+    void(^block)(void) = ^() { NSLog(@&quot;hello world a = %d&quot;,a); ②};
+    ③
+    a = 3;
+    block();
+    return 0;
+}
+//执行结果是
+hello world a = 3
+</code></pre></div><blockquote><p>注：①②③ 处分别打印 <code>a</code> 的内存地址，在 <code>ARC/MRC</code> 下会有不同的结果，在 <code>MRC</code> 下内存地址打印都是一样的，但是在 <code>ARC</code> 下，① 和 ②③ 打印的地址不一样，① 打印的是栈上地址，②③ 打印的是堆上的地址，原因是在 <code>ARC</code> 下向 <code>block</code> 赋值的时候，会自动将 <code>block</code> 从栈上拷贝到堆上。这个现象和后面说到的像 <code>strong</code> 修饰符修饰的 <code>block</code> 属性赋值是一个道理。</p></blockquote> <p>编译后的结果为</p> <div class="language- extra-class"><pre class="language-text"><code>struct __Block_byref_a_0 {
+  void *__isa;
+__Block_byref_a_0 *__forwarding;
+ int __flags;
+ int __size;
+ int a;
+};
+struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  __Block_byref_a_0 *a; // by ref
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, __Block_byref_a_0 *_a, int flags=0) : a(_a-&gt;__forwarding) {
+    impl.isa = &amp;_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+    __Block_byref_a_0 *a = __cself-&gt;a; // bound by ref
+    NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_9w_q4lvthyn17v0cxxm5s7fsb500000gn_T_main_bd6f8c_mi_0,(a-&gt;__forwarding-&gt;a));
+}
+static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {
+    _Block_object_assign((void*)&amp;dst-&gt;a, (void*)src-&gt;a, 8/*BLOCK_FIELD_IS_BYREF*/);
+}
+static void __main_block_dispose_0(struct __main_block_impl_0*src) {
+    _Block_object_dispose((void*)src-&gt;a, 8/*BLOCK_FIELD_IS_BYREF*/);
+}
+static struct __main_block_desc_0 {
+  size_t reserved;
+  size_t Block_size;
+  void (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);
+  void (*dispose)(struct __main_block_impl_0*);
+} __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0), __main_block_copy_0, __main_block_dispose_0
+};
+
+int main(int argc, const char * argv[]) {
+    __attribute__((__blocks__(byref))) __Block_byref_a_0 a = {(void*)0,(__Block_byref_a_0 *)&amp;a, 0, sizeof(__Block_byref_a_0), 0};
+    void(*block)(void) = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, (__Block_byref_a_0 *)&amp;a, 570425344));
+    (a.__forwarding-&gt;a) = 3;
+    ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
+    return 0;
+}
+</code></pre></div><p>根据编译后的结果来看，<code>block</code> 捕获了带有 <code>__block</code> 的自动变量之后生成的代码变的很多，而且出现了很多新的方法，比如 <code>__main_block_dispose_0</code> 和 <code>__main_block_copy_0</code>。同时 <code>block</code> 对应的结构体 <code>__main_block_impl_0</code> 里多出来一项 <code>__Block_byref_a_0 *a;</code>，这个跟我们之前预想的并不一样，我们之前预想的就是多出来一个 <code>int *a</code> 应该就好了，但是这里多出了一个 <code>__Block_byref_a_0</code> 结构体类型的指针，来看一下定义 ：</p> <div class="language- extra-class"><pre class="language-text"><code>struct __Block_byref_a_0 {
+  void *__isa;
+  __Block_byref_a_0 *__forwarding;
+ int __flags;
+ int __size;
+ int a;
+};
+</code></pre></div><p>包含 <code>void *__isa</code> 成员变量，<code>__Block_byref_a_0</code> 这个也算是一个对象类型，里面包含了一个 <code>int a</code> 的成员变量，以及一个指向自己的指针。
+被 <code>__block</code> 修饰符修饰的成员变量被编译器转化为 <code>__Block_byref_a_0</code> 类型的变量。初始化的时候将外部的 <code>__Block_byref_a_0</code> 变量地址赋值给 <code>block</code> 结构体成员变量里的 <code>__Block_byref_a_0</code> 指针。在 <code>block</code> 闭包函数执行的时候通过这个指针来去修改外部变量的值。</p> <p>但是有个问题，为啥不直接生成一个 <code>int *a</code> 这样的指针，而去生成一个那么麻烦的类型呢？后面详细说明</p> <p>思考一下，为什么<code>block</code>捕获带有 <code>__block</code> 修饰符的时候，闭包执行永远输出外部变量<code>a</code>的当前值？</p> <h3 id="block-捕获对象"><a href="#block-捕获对象" class="header-anchor">#</a> Block 捕获对象</h3> <p>先上个 demo</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    NSString * a = @&quot;hello&quot;;
+    void(^block)(void) = ^() { NSLog(@&quot;hello world a = %@&quot;,a); };
+    a = @&quot;world&quot;;
+    block();
+    return 0;
+}
+</code></pre></div><p>编译后</p> <div class="language- extra-class"><pre class="language-text"><code>struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  NSString *a;
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, NSString *_a, int flags=0) : a(_a) {
+    impl.isa = &amp;_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+//
+int main(int argc, const char * argv[]) {
+    NSString * a = (NSString *)&amp;__NSConstantStringImpl__var_folders_r4_93dvjwh16d17_brzl2bv_xb40000gn_T_main_0c7a66_mi_0;
+    void(*block)(void) = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, a, 570425344));
+    a = (NSString *)&amp;__NSConstantStringImpl__var_folders_r4_93dvjwh16d17_brzl2bv_xb40000gn_T_main_0c7a66_mi_2;
+    ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
+    return 0;
+}
+//
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+  NSString *a = __cself-&gt;a; // bound by copy
+ NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_r4_93dvjwh16d17_brzl2bv_xb40000gn_T_main_0c7a66_mi_1,a);
+}
+</code></pre></div><p><code>block</code>实现的结构体<code>__main_block_impl_0</code>里多了一个 <code>NSString *a</code>，貌似和捕获正常的自动变量没什么差别。从 <code>mian.m</code> 方法里的 <code>block</code> 初始化过程里可以看到，这个结构体成员变量的具体的赋值过程其实就是外部字符串对象 <code>a</code> 直接赋值给了 <code>block</code> 结构体成员变量 <code>a</code>，具体的 <code>block</code> 闭包实现中也是直接从 <code>block</code> 结构体中取出 <code>a</code> 直接进行的访问。所以其实闭包里面可以修改对象指针的话也丝毫不会影响外部的同名自动变量 <code>a</code>（这俩根本就不是一个对象指针...），但是如果直接在里面修改的话，编译器是不支持的，会报错（跟捕获普通自动变量时候报一个错）如下：</p> <div class="language- extra-class"><pre class="language-text"><code>Error:Variable is not assignable (missing __block type specifier)
+</code></pre></div><p>但是，如果不是对捕获的外部变量进行指针修改的话，是可以对这些外部变量进行一些操作的，比如说我们捕获的变量是一个可变数组，demo 如下:</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    NSMutableArray *muarr = [NSMutableArray arrayWithCapacity:0];
+    void(^block)(void) = ^() {
+        [muarr addObject:@&quot;1&quot;];
+        NSLog(@&quot;muarr = %@&quot;,muarr);
+    };
+    block();
+    return 0;
+}
+//执行结果如下:
+BlockDemo[1088:31899] muarr = (
+    1
+)
+</code></pre></div><p>可以看到我们在不改变外部对象指针的情况下，对外部对象进行了操作。</p> <blockquote><p>写到这儿不知道为啥想起来，其实跟字符串对象用 strong 修饰还是 copy 修饰有异曲同工之妙了，一般面试题问起来的话，字符串都是用 copy 修饰的，原因是如果字符串 NSString 类型指向了一个 NSMutableString 类型，那当可变字符串的字符更改的时候，看起来就是虽然 NSString 指针没变，但是内容发生了改变，会引起使用上的一些矛盾之处。所以尽量会使用 copy 修饰符修饰。</p></blockquote> <p>同理，想要修改对象指针的话，还是要加上 <code>__block</code> 修饰符。可以自己使用 <code>clang -rewrite-objc main.m</code> 的方式生成一下源代码分析一下。需要注意在 <code>block</code> 闭包实现的时候对变量访问的方式。</p> <p>看编译后的代码被捕获的<code>__block</code>变量是在栈上<code>__Block_byref_fan_0 object</code>，初始化<code>Block</code>对象的时候使用<code>object-&gt;forwarding</code>指针去初始化<code>Block</code>内部对应生成的 <code>__Block_byref_fan_0 *</code>指针，而<code>object-&gt;forwarding</code>这个指针是指向<code>object</code>自身的内存地址。这块儿的分析有助于我们后面对<code>__block</code>修饰的变量内存进行分析。</p> <h2 id="block-的存储域以及内存生命周期分析"><a href="#block-的存储域以及内存生命周期分析" class="header-anchor">#</a> Block 的存储域以及内存生命周期分析</h2> <h3 id="block-存储域"><a href="#block-存储域" class="header-anchor">#</a> Block 存储域</h3> <p><code>Block</code> 存储域分为三种类型：栈上(_NSConcreteStackBlock)，堆上(_NSConcreteMallocBlock)和数据区(_NSConcreteGlobalBlock)。上面的例子中<code>Block</code>都是存在栈上的，和普通的变量一样声明在函数外的话<code>Block</code>就是存在数据区中，比如下面这种 case:</p> <div class="language- extra-class"><pre class="language-text"><code>void(^block)(void) = ^() {
+    NSLog(@&quot;hello world&quot;);
+};
+int main(int argc, const char * argv[]) {
+    block();
+    return 0;
+}
+</code></pre></div><p><code>Block</code> 就是存储在数据区，<code>clang -rewrite-objc main.m</code> 之后生成的代码中，<code>Block</code> 初始化方法中有这样一行 <code>impl.isa = &amp;_NSConcreteGlobalBlock;</code>，说明 <code>Block</code> 所属的类是 <code>_NSConcreteGlobalBlock</code>。</p> <p>值得分析的是，<code>Block</code> 存储域存在堆上的情况，&lt;OC 高级编程&gt; 一书举了如下的例子</p> <div class="language- extra-class"><pre class="language-text"><code>typedef int(^blk_t)(int);
+blk_t func(int rate) {
+    return ^(int count) { return rate *count; };
+}
+int main(int argc, const char * argv[]) {
+    blk_t blk = func(5);
+    NSLog(@&quot;%d&quot;,blk(10));
+    return 0;
+}
+</code></pre></div><p><code>func()</code>方法中<code>Block</code>作为了返回值返回，按道理来讲 <code>Block</code> 超出其函数作用域之后就会被销毁，但是在 ARC 环境下这个 <code>main.m</code> 能正常输出执行结果。当我们修改 <code>main.m</code> 文件的编译选项为 <code>-fno-objc-arc</code> 的时候编译器会报错：</p> <div class="language- extra-class"><pre class="language-text"><code>Error&quot;Returning block that lives on the local stack
+</code></pre></div><p>说明是 ARC 下编译器帮我们做了一些事情，避免了 <code>block</code> 在栈上不能返回的问题。将非 ARC 下的代码修改为</p> <div class="language- extra-class"><pre class="language-text"><code>blk_t func(int rate) {
+    return [^(int count) { return rate *count; } copy];
+}
+</code></pre></div><p>才能避免编译失败问题，并正确得到执行结果。</p> <p>书上给出的在 ARC 下<code>func</code>方法编译完后大致的代码如下</p> <div class="language- extra-class"><pre class="language-text"><code>blk_t func(int rate) {
+   blk_t tmp = ((int (*)(int))&amp;__func_block_impl_0((void *)__func_block_func_0, &amp;__func_block_desc_0_DATA, rate));
+   tmp = objc_retainBlock(tmp);
+   return objc_autoreleaseReturnValue(tmp);
+}
+</code></pre></div><p>即 ARC 下编译器对本身是存在于栈上的<code>Block</code>对象执行了一次<code>copy</code>操作，转移到堆上。</p> <blockquote><p>运行时库中 <code>NSObject.mm</code> 文件中可以看到<code>objc_retainBlock</code>就是<code>_Block_copy</code>方法。</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>id objc_retainBlock(id x) {
+    return (id)_Block_copy(x);
+}
+</code></pre></div><p>大部分情况下编译器都会处理将栈上的<code>Block</code>复制到堆上的 case.</p> <h3 id="block-内存分析"><a href="#block-内存分析" class="header-anchor">#</a> Block 内存分析</h3> <p>存在栈上的<code>Block</code>，如果所属的作用域结束，该<code>Block</code>就被废弃，由于<code>__block</code>修饰的变量也在栈上那么<code>__block</code>修饰的变量也会被废弃。</p> <blockquote><p>使用栈来存储变量的优点是内存是自动为你管理的。你无需手动分配内存，或者在你不再需要时释放内存。<a href="https://tomatosx.github.io/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/2018/03/14/%E5%86%85%E5%AD%98-%E6%A0%88%E5%92%8C%E5%A0%86-C-Swift/" target="_blank" rel="noopener noreferrer">参考地址<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote> <p>刚才说过在 ARC 下，编译器会自动将 <code>Block</code> 从栈上复制到堆上，使用的方法为 <code>_Block_copy</code> 下面是官方的的 API 说明</p> <div class="language- extra-class"><pre class="language-text"><code>// Create a heap based copy of a Block or simply add a reference to an existing one. This must be paired with Block_release to recover memory, even when running under Objective-C Garbage Collection.
+BLOCK_EXPORT void *_Block_copy(const void *aBlock)
+    __OSX_AVAILABLE_STARTING(__MAC_10_6, __IPHONE_3_2);
+//Lose the reference, and if heap based and last reference, recover the memory
+BLOCK_EXPORT void _Block_release(const void *aBlock)
+    __OSX_AVAILABLE_STARTING(__MAC_10_6, __IPHONE_3_2);
+</code></pre></div><p>即使用 <code>_Block_copy</code> 可以创建基于堆上的一份儿<code>Block</code>的复制，同时<code>_Block_copy</code>一定是配合<code>_Block_release</code>使用，否则会造成内存泄漏。</p> <p><img src="/assets/img/15268076432722.df3fdd4e.jpg" alt=""></p> <h2 id="block-捕获成员变量的生命周期"><a href="#block-捕获成员变量的生命周期" class="header-anchor">#</a> Block 捕获成员变量的生命周期</h2> <h3 id="block-捕获普通对象的生命周期分析"><a href="#block-捕获普通对象的生命周期分析" class="header-anchor">#</a> Block 捕获普通对象的生命周期分析</h3> <p>捕获普通自动变量对象 A 的话，<code>Block</code> 会影响普通自动变量的生命周期，即自动变量作用域结束，A 并不会被立即释放。而是跟捕获了它的 <code>Block</code> 的生命周期同步。原因是为了捕获自动变量 A，<code>Block</code> 对象内部会生成一个捕获对象的同类型的对象 A' 来对捕获对象进行持有，即使得 A 的引用计数加一。所以当 A 的作用域结束之后 A 依然能存活，直到 <code>Block</code> 被释放，A 跟着一起被释放。</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    blk_t blk;
+    {
+        Fan *fan = [[Fan alloc] init];
+        blk = ^() {
+            NSLog(@&quot;a = %@&quot;,fan);
+        };
+    }
+    blk();
+    return 0;
+}
+</code></pre></div><p>我们编译完的这部分代码中包含如下代码，这是为了管理<code>__block</code>结构体中捕获的对应外部变量的<code>fan</code>的内存而生。</p> <div class="language- extra-class"><pre class="language-text"><code>struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  Fan *fan;
+  ...
+};
+static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {_Block_object_assign((void*)&amp;dst-&gt;fan, (void*)src-&gt;fan, 3/*BLOCK_FIELD_IS_OBJECT*/);}
+
+static void __main_block_dispose_0(struct __main_block_impl_0*src) {_Block_object_dispose((void*)src-&gt;fan, 3/*BLOCK_FIELD_IS_OBJECT*/);}
+</code></pre></div><p>编译后的代码中这两个方法并没有被调用，而是当<code>Block</code>被从栈上拷到堆上，以及在堆上被释放的时候才会被调用。如图：</p> <p><img src="/assets/img/15268143127436.1a446f41.jpg" alt=""></p> <p>但是实践中很奇怪的一点是在 ARC 环境下，对<code>Block</code>对象进行了 copy 操作还是没能触发<code>_Block_object_assign</code>这个方法的执行，但是在 MRC 环境下同样条件就能触发<code>_Block_object_assign</code>这个方法。这里 ARC 编译后的代码应该是做了一些额外的操作。</p> <h3 id="block-捕获带有-block-修饰符对象的声明周期分析"><a href="#block-捕获带有-block-修饰符对象的声明周期分析" class="header-anchor">#</a> Block 捕获带有 __block 修饰符对象的声明周期分析</h3> <p>如果被<code>__block</code>修饰的对象是自动变量，而且<code>Block</code>并没有执行从栈拷贝到堆上的操作，那和普通的自动变量对象一样并没有什么区别，<code>__block</code>修饰的对象也是跟着<code>Block</code>对象一起释放。</p> <p>但是实际情况里<code>__block</code>修饰对象可能存在栈上，可能存在堆上，而<code>Block</code>对象也有可能从栈上被复制到堆上，这些场景下，<code>__block</code>修饰对象的生命周期是什么样的？</p> <p><img src="/assets/img/15268110185323.a633354c.jpg" alt=""></p> <p>当<code>Block</code>捕获带有<code>__block</code>修饰符的自动变量的时候，编译后代码出现下面的一些源码，即 <code>Block</code>对象除了管理自己的内存之外还要额外操心<code>__block</code>修饰变量的内存了。</p> <p>这里 <code>__block</code>变量对象内存管理和普通的引用计数管理思想基本一致了，即哪个<code>Block</code>对象持有了<code>__block</code>变量，则该<code>Block</code>对象有义务对<code>__block</code>变量进行释放。当所有<code>Block</code>都被释放的时候<code>__block</code>变量也跟着一起释放掉。</p> <h2 id="gcd-里面的-block-分析"><a href="#gcd-里面的-block-分析" class="header-anchor">#</a> GCD 里面的 Block 分析</h2> <p>GCD 提供的 API 里大量使用了 Block 作为参数，比如我们常用的 API <code>dispatch_async(queue, ^(void){})</code> 等，通常来说，我们并不需要过分关注 API 中 Block 的内存管理。因为 GCD 会自动帮我们处理，参考 <code>dispatch_async</code> API 的官方说明(其实 <code>dispatch_after</code> API 里也是这么说的)</p> <blockquote><p>dispatch_async 参数 block 的解释
+The block to submit to the target dispatch queue. This function performs Block_copy and Block_release on behalf of callers. This parameter cannot be NULL.
+即这个方法会自动在合适的时机执行 <code>Block_Copy</code> 和 <code>Block_release</code> 两个方法。这样就保证了在执行 Block 之前不会因为 Block 的作用域的原因而是的 Block 提前被释放，将 Block 放到堆上是比较安全的做法。</p></blockquote> <p>现在有个问题，Block 被谁持有了？通过写 demo 打符号断点 <code>_Block_copy</code>，跟到了其上一步调用 <code>_dispatch_Block_copy</code> ，然后在 GCD 的 <a href="https://opensource.apple.com/source/libdispatch/libdispatch-84.5/src/queue.c" target="_blank" rel="noopener noreferrer">queue.c 源码<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>中找到了答案，是一个 <code>dispatch_block_t</code> 的类型的变量持有了 Block 对象。</p> <p>关于 GCD 里面的 Block 里面是否应该使用 self，YYKit 的一个 <a href="https://github.com/ibireme/YYKit/issues/41" target="_blank" rel="noopener noreferrer">issue<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 里讨论的比较火热。但是很多评论都是有问题的，包括 YY 的理解都是有问题的，YY 对 block 的理解就是「self-&gt;_queue-&gt;block-&gt;self 这不是循环引用吗」但是根据我们刚才的分析，其实 GCD 的 queue 并没有持有 block，GCD 的 Block 内存管理跟当前执行所在的类没有任何关系，系统负责<code>Block_Copy</code>和<code>Block_release</code>，我理解这种 case 算不上循环引用。所以可以放心的在 GCD 里面使用 self，而不需要 weak dance.</p> <blockquote><p>Block_Copy 内部的实现机制可以参考<a href="http://www.galloway.me.uk/2013/05/a-look-inside-blocks-episode-3-block-copy/" target="_blank" rel="noopener noreferrer">这篇文章<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote> <p>还有一个 GCD 中应该注意的内存问题，即 ARC 和 dispatch queues 以及 GCD Block 内存管理之间的关系。
+需要分类讨论</p> <ol><li><p>If your deployment target is lower than iOS 6.0 or Mac OS X 10.8</p> <blockquote><p>You need to use <code>dispatch_retain</code> and <code>dispatch_release</code> on your queue. ARC does not manage them.</p></blockquote></li> <li><p>If your deployment target is iOS 6.0 or Mac OS X 10.8 or later</p> <blockquote><p>ARC will manage your queue for you. You do not need to (and cannot) use <code>dispatch_retain</code> or <code>dispatch_release</code> if ARC is enabled.</p></blockquote></li></ol> <p><a href="https://stackoverflow.com/questions/8618632/does-arc-support-dispatch-queues" target="_blank" rel="noopener noreferrer">参考地址 - Does ARC support dispatch queues?<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p>在 MRC 下 GCD 也会自动执行 <code>Block_Copy</code> 和 <code>Block_Release</code> 方法，所以在 MRC 下的 GCD Block 里面继续使用 self 也不会产生内存的问题。</p> <p>总结就是在古老的系统中，即使编译器开启了 ARC 也不一定能管理 <code>dispatch_object</code> 对象，还好我们现在早已经过了兼容的那个阶段。</p> <h2 id="mrc-arc-下-block-内存管理区别"><a href="#mrc-arc-下-block-内存管理区别" class="header-anchor">#</a> MRC &amp; ARC 下 Block 内存管理区别</h2> <p>MRC 和 ARC 下 Block 内存管理的区别主要在于 MRC 下并不会对<code>Block</code>进行主动 copy 操作。举个例子：</p> <div class="language- extra-class"><pre class="language-text"><code>blk returnblk() {
+    int a = 0;
+    blk tempblk = ^(){
+        NSLog(@&quot;hello world,a = %d&quot;,a);
+    };
+    return tempblk;
+}
+int main(int argc, const char * argv[]) {
+    blk newblk = returnblk();
+    newblk();  ①
+    return 0;
+}
+</code></pre></div><p>MRC 下在 ① 的位置打断点，观察 <code>newblk</code> 的类型为 <code>__NSStackBlock__</code>，同样断点 ARC 下观察到 <code>newblk</code> 的类型为 <code>__NSMallocBlock__</code>。说明在 ARC 下 <code>tempblk</code> 在返回的时候自动执行了一次 copy 操作。</p> <p>还有一个更经典的例子</p> <div class="language- extra-class"><pre class="language-text"><code>@interface Fan : NSObject {
+    dispatch_queue_t queue;
+    Blk blk;
+}
+@end
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        blk = ^() {NSLog(@&quot;self %@&quot;,self);};
+        ①
+    }
+    return self;
+}
+</code></pre></div><p>MRC 下在 ① 处打断点，<code>blk</code> 的类型为 <code>__NSStackBlock__</code>，同样断点 ARC 下观察到 <code>blk</code> 的类型为 <code>__NSMallocBlock__</code>。ARC 自动在给成员变量 <code>blk</code> 赋值的时候进行了一次 copy 操作。上面这个例子还引出了一个循环引用的问题，我们下面说。</p> <h3 id="mrc-下-retain-方法使用注意"><a href="#mrc-下-retain-方法使用注意" class="header-anchor">#</a> MRC 下 retain 方法使用注意</h3> <p>MRC 下还需要注意的是，如果<code>Block</code>在栈上的话，对<code>Block</code>进行 retain 操作没有任何意义。必须对其进行 copy 操作才能将其从栈上复制到堆上。如果<code>Block</code>在堆上的话，对其进行 retain 操作，<code>Block</code>对象的引用计数会加一。</p> <blockquote><p>在对 <code>Block</code> 对象进行 copy 操作的时候，<code>Block_copy</code> 方法和 <code>copy</code> 方法执行的效果是一样的，同理，<code>Block_release</code> 和 <code>release</code> 方法效果也一样。</p></blockquote> <h3 id="mrc-下破解循环引用的方式"><a href="#mrc-下破解循环引用的方式" class="header-anchor">#</a> MRC 下破解循环引用的方式</h3> <p>对于 MRC 下，为了防止循环引用，我们使用<code>__block</code>来修饰在 Block 中使用的对象。</p> <blockquote><p>原因是在当 Block 被从栈拷贝到堆上的时候，不会对带有<code>__block</code>修饰符的自动变量对象进行 retain 操作，不带有 <code>__block</code>修饰符的自动变量对象会被 retain 操作。
+所以上面的例子需要现用 <code>__block id temp = self;</code> 也对 <a href="%5B%5D()"></a>self 进行一次引用，然后在 <code>block</code> 里面使用 temp.</p></blockquote> <p>对于 ARC 下，为了防止循环引用，我们使用<code>__weak</code>来修饰在 Block 中使用的对象。</p> <h2 id="block-weak-分析-strongself-分析"><a href="#block-weak-分析-strongself-分析" class="header-anchor">#</a> Block **weak 分析 / **strongSelf 分析</h2> <p>关于 Block weak 和 strong 的说明，这两个配合使用存在的意义就是让 block 避免循环引用。举个例子，在视图控制器 (VC) 的 <code>viewDidLoad</code> 方法里执行如下代码 ,<code>FRButton</code> 内部持有了这个点击 <code>block</code>。</p> <div class="language- extra-class"><pre class="language-text"><code>__weak typeof(self) weakSelf = self;
+[button setClickBlk:^{
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@&quot;strongSelf = %@&quot;,strongSelf);
+    });
+}];
+</code></pre></div><p>当 dismiss 的时候，VC 并没有被释放，而是等 <code>dispatch_after</code> 的 block 执行之后 VC 才被释放。
+分析在 button 赋值 block 对象时候 <code>__weak</code> 和 <code>__strong</code> 的用法，通过引用计数和持有关系进行内存分析。</p> <ol><li>首先在 button block 的外部使用 <code>__weak</code> 对 <code>self</code> 进行持有，并没有增加 <code>self</code> 的引用计数。</li> <li>在 button block 内部进行对 <code>weakSelf</code> 进行 <code>__strong</code> 修饰符的 <code>strongSelf</code> 持有，增加了 <code>self</code> 的引用计数</li> <li>分析一下引用关系啊， VC 持有了 button，button 内部持有了 <code>block</code>，<code>block</code> 捕获的是 VC 的 <code>weakSelf</code>。 Block 里面的 <code>strongSelf</code> 仅仅是个自动变量而已（看上面 clang 编译出来的代码就知道，<code>strongSelf</code> 应该是在编译后的闭包函数对应的内联方法里声明的），不用分析其引用关系。但是 <code>strongSelf</code> 增加了 VC 的引用计数。</li> <li>当点击之后，然后用另外的方法让 VC 迅速(3 秒) dismiss，这个时候 VC 并没有被释放，因为 <code>strongSelf</code> 增加了 VC 的引用计数。而 <code>dispatch_after</code> 的 block 持有了 strongSelf，<code>dispatch_after</code> 的 block 在延时 3 秒后执行，执行完之后 <code>dispatch_after</code> 的 strongSelf 也被释放(自动变量作用域结束自动被回收)，这个时候 VC 的引用计数变为 0 才会被释放。此时 weakSelf 被置为了 nil，第 3 步里面的引用关系断掉了，即 Block 不再持有 VC 了。所以不会出现循环引用的问题。</li></ol> <p>释放顺序是：1、 VC; 2、Button;3、Block。</p> <blockquote><p><strong>误区一</strong>，<code>Block</code>捕获<code>__weak</code>修饰符的对象，虽然我们不能通过执行 <code>clang -rewrite-objc BlockDemo/main.m</code> 来看最后的编译结果（会报错，`cannot create __weak reference because the current deployment target does</p></blockquote> <div class="language- extra-class"><pre><code>  not support weak references`），但我猜原理是`Block`对象结构体内部直接生成一个 `__weak`修饰的成员变量指向`__weak`修饰的对象，而不是生成`__block`修饰的那种结构来，这样才能保证`Block`不会对`self`进行强持有来增加引用计数。
+</code></pre></div><blockquote><p><strong>误区二</strong>，另外一个之前分析时候陷入误区的点是，总会纠结<code>block</code>里面的代码会不会执行，其实执行与否都不会影响当前这种结构的的内存分析，执行匿名函数代码的话<code>strongSelf</code>到最后会被释放，<code>block</code>跟着一起释放。不执行的话<code>self</code>其实也没有强持有<code>block</code>，所以不会造成内存引用问题。</p></blockquote> <p>正是因为误区二，我们引出另外一个问题，即在下面的 ① 的位置添加了一个判断，有必要吗？</p> <div class="language- extra-class"><pre class="language-text"><code>__weak typeof(self) weakSelf = self;
+[networkManager fetchFinishBlk:^(response){
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (nil == strongSelf) {  ①
+        return;
+    }
+    [strongSelf xxx];
+}];
+</code></pre></div><p>之前总是觉得 <code>strongSelf</code> 会强引用 <code>self</code>，所以 <code>self</code> 在执行 <code>block</code> 闭包函数之前不会被释放，其实有可能在执行 <code>block</code> 之前，<code>self</code> 已经被释放掉了，则 <code>weakSelf</code> 为 <code>nil</code>, 这个时候 <code>strongSelf</code> 还没有来得及增加的引用计数呢... 所以加上这个判断是必要的。</p> <p>那又引出一个问题，如果我一定想要执行 <code>block</code> 闭包函数里的方法呢，可以参考<a href="https://juejin.im/entry/594a2aa8ac502e5490f9598d" target="_blank" rel="noopener noreferrer">这篇文章<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>里的做法，大体思路是先触发循环引用，然后在 <code>block</code> 执行完毕之后再将循环引用破解掉。</p> <p>再进一步思考，如果是下面这种情况，会造成循环引用吗？</p> <div class="language- extra-class"><pre class="language-text"><code>__weak typeof(self) weakSelf = self;
+[cell setEditPressedBlk:^{
+    __strong typeof(weakSelf) strongSelf = weakSelf; ①
+    [strongSelf pickerCancel];
+    strongSelf.textFiledView = [TFAlertView Title:@&quot;Title&quot; message:@&quot;&quot; complete:^(NSString *text, TFAlertView *alertview) {
+        [strongSelf modifyNameWithValue:text];  ②
+    }];
+}];
+</code></pre></div><h2 id="一些常见的关于-block-的面试题"><a href="#一些常见的关于-block-的面试题" class="header-anchor">#</a> 一些常见的关于 Block 的面试题</h2> <p><strong>Q: Block 作为对象的属性应该用 copy 修饰还是 strong 修饰??</strong>
+A: 在 MRC 下的话，必须用 copy 修饰，用 retain 修饰的话，栈上的 Block 无法被拷贝对堆上，导致使用的时候可能出问题。
+在 ARC 下用 strong 即可，当给 block 属性赋值的时候会自动将栈上的 block 拷贝到堆上，用 copy 的话效果是一样的，但是苹果的官方文档还是建议我们即使是在 ARC 上也使用 copy 修饰符，因为 copy 会显式地说明我们对 block 的操作。同时，我们的工程偶尔也会看到给 block 属性进行赋值的时候，手动添加了一个 copy 方法，比如 <code>self.block = [blk copy];</code> 其实是完全没有必要的。
+官方地址 - <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html#//apple_ref/doc/uid/TP40011210-CH8-SW12" target="_blank" rel="noopener noreferrer">Objects Use Properties to Keep Track of Blocks<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p>#参考地址#
+<a href="https://developer.apple.com/videos/play/wwdc2012/712/" target="_blank" rel="noopener noreferrer">WWDC_712<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="/2018/04/07/block-%E7%90%86%E8%A7%A3/shttps://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Blocks/Articles/00_Introduction.html">Blocks Programming Topic</a> <a href="https://draveness.me/block-retain-object" target="_blank" rel="noopener noreferrer">iOS 中的 block 是如何持有对象的<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://www.jianshu.com/p/ee9756f3d5f6" target="_blank" rel="noopener noreferrer">深入研究 Block 捕获外部变量和__block 实现原理<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="http://www.galloway.me.uk/2013/05/a-look-inside-blocks-episode-3-block-copy/" target="_blank" rel="noopener noreferrer">A look inside blocks: Episode 3 (Block_copy)<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://elliotsomething.github.io/2016/07/28/OC%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93%E4%B9%8BGCD-%E4%B8%80/" target="_blank" rel="noopener noreferrer">OC 高级编程学习总结之 GCD<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://blog.csdn.net/abc649395594/article/details/45476925" target="_blank" rel="noopener noreferrer"><strong>weak 与</strong>block 修饰符到底有什么区别<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://blog.6ag.cn/1186.html" target="_blank" rel="noopener noreferrer">Block 在 ARC 和 MRC 下的使用分析<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="http://ios.jobbole.com/88708/" target="_blank" rel="noopener noreferrer">深入研究 Block 用 weakSelf、strongSelf、@weakify、@strongify 解决循环引用<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://juejin.im/entry/594a2aa8ac502e5490f9598d" target="_blank" rel="noopener noreferrer">循环引用的破局法门<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://www.jianshu.com/p/a5dd014edb13" target="_blank" rel="noopener noreferrer">深入分析 Objective-C block、weakself、strongself 实现原理<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p>最后送上两个关于 block 的语法说明</p> <ol><li>https://weibo.com/1765732340/GfRtraOYj?type=comment</li> <li>http://fuckingblocksyntax.com</li></ol></div> <footer><!----> <hr> <!----></footer></article> <div class="sticker vuepress-toc"><div class="vuepress-toc-item vuepress-toc-h2 active"><a href="#block-的本质" title="Block 的本质">Block 的本质</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#block-捕获变量" title="Block 捕获变量">Block 捕获变量</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-捕获普通类型自动变量" title="Block 捕获普通类型自动变量">Block 捕获普通类型自动变量</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-捕获并修改普通类型自动变量-block-修饰符分析" title="Block 捕获并修改普通类型自动变量/__block 修饰符分析">Block 捕获并修改普通类型自动变量/__block 修饰符分析</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-捕获对象" title="Block 捕获对象">Block 捕获对象</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#block-的存储域以及内存生命周期分析" title="Block 的存储域以及内存生命周期分析">Block 的存储域以及内存生命周期分析</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-存储域" title="Block 存储域">Block 存储域</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-内存分析" title="Block 内存分析">Block 内存分析</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#block-捕获成员变量的生命周期" title="Block 捕获成员变量的生命周期">Block 捕获成员变量的生命周期</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-捕获普通对象的生命周期分析" title="Block 捕获普通对象的生命周期分析">Block 捕获普通对象的生命周期分析</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#block-捕获带有-block-修饰符对象的声明周期分析" title="Block 捕获带有 __block 修饰符对象的声明周期分析">Block 捕获带有 __block 修饰符对象的声明周期分析</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#gcd-里面的-block-分析" title="GCD 里面的 Block 分析">GCD 里面的 Block 分析</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#mrc-arc-下-block-内存管理区别" title="MRC &amp; ARC 下 Block 内存管理区别">MRC &amp; ARC 下 Block 内存管理区别</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#mrc-下-retain-方法使用注意" title="MRC 下 retain 方法使用注意">MRC 下 retain 方法使用注意</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#mrc-下破解循环引用的方式" title="MRC 下破解循环引用的方式">MRC 下破解循环引用的方式</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#block-weak-分析-strongself-分析" title="Block weak 分析 / strongSelf 分析">Block weak 分析 / strongSelf 分析</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#一些常见的关于-block-的面试题" title="一些常见的关于 Block 的面试题">一些常见的关于 Block 的面试题</a></div></div></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8></ul></div></footer></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.2cedb1d8.js" defer></script><script src="/assets/js/29.309f71c0.js" defer></script><script src="/assets/js/3.e78f3171.js" defer></script><script src="/assets/js/32.41be2bbb.js" defer></script>
+  </body>
+</html>

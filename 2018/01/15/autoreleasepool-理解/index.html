@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>AutoreleasePool 理解 | fanthus&#39;s blog</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/logo.jpg">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-152x152.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3eaf7c">
+    <script async="true" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3512514942188386" crossorigin="anonymous"></script>
+    <script async="true" src="https://www.googletagmanager.com/gtag/js?id=G-MEH5F43SVB"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-MEH5F43SVB');</script>
+    <script>console.log("my name is fanthus, hope my blog bring new ideas to you.");</script>
+    <meta name="description" content="从一些问题开始
+
+什么是 AutoreleasePool ? 说明一下 NSAutoreleasePool 具体机制?
+ARC 时代和 MRC 时代的 AutoreleasePool 机制有什么区别？
+AutoreleasePool 的实现机制?
+AutoreleasePool 和 NSRunloop 有什么关系？
+`AutoreleasePool ...">
+    <meta name="theme-color" content="#3eaf7c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-TileImage" content="/icons/msapplication-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    
+    <link rel="preload" href="/assets/css/0.styles.232103a7.css" as="style"><link rel="preload" href="/assets/js/app.2cedb1d8.js" as="script"><link rel="preload" href="/assets/js/29.309f71c0.js" as="script"><link rel="preload" href="/assets/js/3.e78f3171.js" as="script"><link rel="preload" href="/assets/js/31.c2accd33.js" as="script"><link rel="prefetch" href="/assets/js/10.4cd31608.js"><link rel="prefetch" href="/assets/js/100.3443112a.js"><link rel="prefetch" href="/assets/js/101.e0037931.js"><link rel="prefetch" href="/assets/js/102.f4c7589f.js"><link rel="prefetch" href="/assets/js/103.0df46cd4.js"><link rel="prefetch" href="/assets/js/104.17a0ee44.js"><link rel="prefetch" href="/assets/js/105.57832bba.js"><link rel="prefetch" href="/assets/js/106.680eda55.js"><link rel="prefetch" href="/assets/js/107.410f297e.js"><link rel="prefetch" href="/assets/js/108.fb80d3ad.js"><link rel="prefetch" href="/assets/js/109.699c7520.js"><link rel="prefetch" href="/assets/js/11.7393e510.js"><link rel="prefetch" href="/assets/js/110.d4f0aca9.js"><link rel="prefetch" href="/assets/js/111.372545eb.js"><link rel="prefetch" href="/assets/js/112.bc127403.js"><link rel="prefetch" href="/assets/js/113.414e616f.js"><link rel="prefetch" href="/assets/js/114.d8c4fe8d.js"><link rel="prefetch" href="/assets/js/115.279ec90c.js"><link rel="prefetch" href="/assets/js/116.c60ac54a.js"><link rel="prefetch" href="/assets/js/117.15c04390.js"><link rel="prefetch" href="/assets/js/118.f9d8228c.js"><link rel="prefetch" href="/assets/js/119.719d77b5.js"><link rel="prefetch" href="/assets/js/12.c35fa779.js"><link rel="prefetch" href="/assets/js/120.cf48f47a.js"><link rel="prefetch" href="/assets/js/121.4aad0ac7.js"><link rel="prefetch" href="/assets/js/122.15f2b5ef.js"><link rel="prefetch" href="/assets/js/123.4dea98c9.js"><link rel="prefetch" href="/assets/js/124.0152be90.js"><link rel="prefetch" href="/assets/js/125.ecf56222.js"><link rel="prefetch" href="/assets/js/126.50fe6660.js"><link rel="prefetch" href="/assets/js/127.28abe492.js"><link rel="prefetch" href="/assets/js/128.48a0862c.js"><link rel="prefetch" href="/assets/js/129.77b2b203.js"><link rel="prefetch" href="/assets/js/13.35658260.js"><link rel="prefetch" href="/assets/js/130.d0ef4952.js"><link rel="prefetch" href="/assets/js/131.55b00f57.js"><link rel="prefetch" href="/assets/js/14.4e33e6a2.js"><link rel="prefetch" href="/assets/js/15.345a84a1.js"><link rel="prefetch" href="/assets/js/16.3d596c76.js"><link rel="prefetch" href="/assets/js/17.3e2e1a7a.js"><link rel="prefetch" href="/assets/js/18.c8e88810.js"><link rel="prefetch" href="/assets/js/19.f0e3f187.js"><link rel="prefetch" href="/assets/js/20.cb5c866b.js"><link rel="prefetch" href="/assets/js/21.b83191ac.js"><link rel="prefetch" href="/assets/js/22.bea483cb.js"><link rel="prefetch" href="/assets/js/23.3877c278.js"><link rel="prefetch" href="/assets/js/24.0524a7e6.js"><link rel="prefetch" href="/assets/js/25.3f3c78fe.js"><link rel="prefetch" href="/assets/js/26.3f72710f.js"><link rel="prefetch" href="/assets/js/27.f35bb8e9.js"><link rel="prefetch" href="/assets/js/28.5e29b9fe.js"><link rel="prefetch" href="/assets/js/30.a60200be.js"><link rel="prefetch" href="/assets/js/32.41be2bbb.js"><link rel="prefetch" href="/assets/js/33.8447af66.js"><link rel="prefetch" href="/assets/js/34.122a4606.js"><link rel="prefetch" href="/assets/js/35.fa9f0fe8.js"><link rel="prefetch" href="/assets/js/36.ffc459c1.js"><link rel="prefetch" href="/assets/js/37.12421aeb.js"><link rel="prefetch" href="/assets/js/38.66884bf5.js"><link rel="prefetch" href="/assets/js/39.4901c209.js"><link rel="prefetch" href="/assets/js/4.41416bc4.js"><link rel="prefetch" href="/assets/js/40.726f0f90.js"><link rel="prefetch" href="/assets/js/41.1466329e.js"><link rel="prefetch" href="/assets/js/42.ad110115.js"><link rel="prefetch" href="/assets/js/43.42f6c87f.js"><link rel="prefetch" href="/assets/js/44.38a3ffda.js"><link rel="prefetch" href="/assets/js/45.54729d58.js"><link rel="prefetch" href="/assets/js/46.688f019f.js"><link rel="prefetch" href="/assets/js/47.069217c5.js"><link rel="prefetch" href="/assets/js/48.0227b0c3.js"><link rel="prefetch" href="/assets/js/49.7a3d3511.js"><link rel="prefetch" href="/assets/js/5.9be8c1b7.js"><link rel="prefetch" href="/assets/js/50.35d1d592.js"><link rel="prefetch" href="/assets/js/51.7e7b901a.js"><link rel="prefetch" href="/assets/js/52.f693d3ed.js"><link rel="prefetch" href="/assets/js/53.c4c4d1a2.js"><link rel="prefetch" href="/assets/js/54.eab66332.js"><link rel="prefetch" href="/assets/js/55.7e80dbb1.js"><link rel="prefetch" href="/assets/js/56.1041c5f3.js"><link rel="prefetch" href="/assets/js/57.a7c1bc68.js"><link rel="prefetch" href="/assets/js/58.c07c376a.js"><link rel="prefetch" href="/assets/js/59.8b20d651.js"><link rel="prefetch" href="/assets/js/6.1724a888.js"><link rel="prefetch" href="/assets/js/60.417e91a2.js"><link rel="prefetch" href="/assets/js/61.4db451fd.js"><link rel="prefetch" href="/assets/js/62.8f0bdaac.js"><link rel="prefetch" href="/assets/js/63.911f46a9.js"><link rel="prefetch" href="/assets/js/64.60deeb3e.js"><link rel="prefetch" href="/assets/js/65.201e0e08.js"><link rel="prefetch" href="/assets/js/66.248f04bf.js"><link rel="prefetch" href="/assets/js/67.500ae9a1.js"><link rel="prefetch" href="/assets/js/68.a95fd5e5.js"><link rel="prefetch" href="/assets/js/69.24aaae86.js"><link rel="prefetch" href="/assets/js/7.934b58e4.js"><link rel="prefetch" href="/assets/js/70.ec2f6ce6.js"><link rel="prefetch" href="/assets/js/71.b454fdd6.js"><link rel="prefetch" href="/assets/js/72.74299778.js"><link rel="prefetch" href="/assets/js/73.3cd8645d.js"><link rel="prefetch" href="/assets/js/74.d5accf5c.js"><link rel="prefetch" href="/assets/js/75.2d01044b.js"><link rel="prefetch" href="/assets/js/76.f31f74e1.js"><link rel="prefetch" href="/assets/js/77.3b826970.js"><link rel="prefetch" href="/assets/js/78.b7547141.js"><link rel="prefetch" href="/assets/js/79.5d0ef470.js"><link rel="prefetch" href="/assets/js/8.2a195ce5.js"><link rel="prefetch" href="/assets/js/80.0b0b5a17.js"><link rel="prefetch" href="/assets/js/81.24f2588e.js"><link rel="prefetch" href="/assets/js/82.f8c84af4.js"><link rel="prefetch" href="/assets/js/83.7fff9a1b.js"><link rel="prefetch" href="/assets/js/84.c0208c2c.js"><link rel="prefetch" href="/assets/js/85.e363b25e.js"><link rel="prefetch" href="/assets/js/86.5837e9f1.js"><link rel="prefetch" href="/assets/js/87.3e2f38a0.js"><link rel="prefetch" href="/assets/js/88.d3958f6f.js"><link rel="prefetch" href="/assets/js/89.ec3fdee0.js"><link rel="prefetch" href="/assets/js/9.c0adb174.js"><link rel="prefetch" href="/assets/js/90.94654c43.js"><link rel="prefetch" href="/assets/js/91.76b106e7.js"><link rel="prefetch" href="/assets/js/92.69e5bf8b.js"><link rel="prefetch" href="/assets/js/93.3d4a8f29.js"><link rel="prefetch" href="/assets/js/94.202d1036.js"><link rel="prefetch" href="/assets/js/95.002d5790.js"><link rel="prefetch" href="/assets/js/96.044893c5.js"><link rel="prefetch" href="/assets/js/97.c6dec31d.js"><link rel="prefetch" href="/assets/js/98.20673f07.js"><link rel="prefetch" href="/assets/js/99.fa4a2cf2.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.91ff346d.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.232103a7.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">fanthus's blog </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">Blog</a></li><li class="nav-item"><a href="/tag/" class="nav-link">Tags</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">fanthus's blog </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">Blog</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">Tags</a></li> <li class="mobile-nav-item"><!----></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        AutoreleasePool 理解
+      </h1> <div class="post-meta"><!----> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2018-01-15T10:39:51.000Z">
+      Mon Jan 15 2018
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/iOS" data-v-42ccfcd5><span data-v-42ccfcd5>iOS</span></a></li><li class="post-tag" data-v-42ccfcd5><a href="/tag/Objective-C" data-v-42ccfcd5><span data-v-42ccfcd5>Objective-C</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><p>从一些问题开始</p> <ol><li>什么是 <code>AutoreleasePool</code> ? 说明一下 <code>NSAutoreleasePool</code> 具体机制?</li> <li>ARC 时代和 MRC 时代的 <code>AutoreleasePool</code> 机制有什么区别？</li> <li><code>AutoreleasePool</code> 的实现机制?</li> <li><code>AutoreleasePool</code> 和 NSRunloop 有什么关系？</li> <li><code>AutoreleasePool</code> 和线程有什么关系?</li> <li>什么时候需要我们手动创建 <code>AutoreleasePool</code> ?</li></ol> <h2 id="什么是-autoreleasepool-如何理解-nsautoreleasepool"><a href="#什么是-autoreleasepool-如何理解-nsautoreleasepool" class="header-anchor">#</a> 什么是 AutoreleasePool ? 如何理解 NSAutoreleasePool?</h2> <p><code>NSAutoreleasePool</code> 对象的官方说明是一个支持 <code>Cocoa</code> 引用计数式内存管理的一个对象。 当池子排掉的时候向池子内存储的对象发送 <code>release</code> 消息。</p> <blockquote><p>An object that supports Cocoa’s reference-counted memory management system.
+An autorelease pool stores objects that are sent a release message when the pool itself is drained.</p></blockquote> <p>具体机制说明：
+在引用计数式的内存管理中，<code>NSAutoreleasePool</code> 对象包含了收到了 <code>_autorelease</code> 消息的对象，这些 <code>autorelease</code> 对象（我们称被标记了 <code>__autorelease</code> 的对象为 <code>autorelease</code> 对象）的生命周期被延长到了这个 <code>NSAutoreleasePool</code> drain 的时候。也可以这么说 <code>autorelease</code> 和 <code>release</code> 的区别仅仅是 <code>autorelease</code> 是延时释放(即等待 <code>AutoreleasePool drain</code>) 而 <code>release</code> 是立即释放。</p> <p>感觉说到这儿，其实我们可以说 <code>NSAutoreleasePool</code> 就是一个帮助我们管理内存的一个工具。</p> <p>其实不光是我们自己可以手动创建 <code>NSAutoreleasePool</code> 对象，系统也帮我们维护了一个 <code>NSAutoreleasePool</code> 对象，在 <code>runloop</code> 迭代中不断 <code>Push</code> 和 <code>Pop</code>，从而不会堆积过多的 <code>autorelease</code> 对象引起内存疯长。你可能会好奇，哪会有那么多 <code>autorelease</code> 对象？举个例子来看一下：</p> <div class="language- extra-class"><pre class="language-text"><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+    // str 其实是一个 autorelease 对象
+    NSString *str = [NSString stringWithFormat:@&quot;sunnyxx&quot;];
+    reference = str;
+}
+</code></pre></div><p>题外话：为啥 str 是一个 <code>autorelease</code> 对象呢？
+这个就需要知道下内存管理的知识了，使用 <code>alloc</code>,<code>new</code>,<code>copy</code>和<code>mutableCopy</code>这些关键字生成的对象是自己持有，反之不是（参考 <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-SW1" target="_blank" rel="noopener noreferrer">Memory Management Policy<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>）。使用 <code>stringWithFormat:</code> 类方法生成的 <code>str</code> 没有持有它的对象，只能通过 <code>autorelease</code> 这种方式来延长它的生命周期。具体 <code>autorelease</code> 的时机是在 <code>stringWithFormat</code> 内部做的。</p> <p><code>Cocoa</code> 的 <code>Framework</code> 里大量生成了 <code>autorelease</code> 的对象，所以官方说明里 <code>Cocoa</code> 代码执行是预期在一个 <code>autorelease</code> 环境中。</p> <h2 id="arc-时代和-mrc-时代的-autoreleasepool-机制有什么区别"><a href="#arc-时代和-mrc-时代的-autoreleasepool-机制有什么区别" class="header-anchor">#</a> ARC 时代和 MRC 时代的 AutoreleasePool 机制有什么区别？</h2> <p>没啥根本区别，只是写法稍有不同。看两个 ARC 和 MRC 时代 <code>autorelease</code> 的两个经典写法。</p> <p>MRC 的 case:</p> <div class="language- extra-class"><pre class="language-text"><code>NSAutoreleasePool *pool = [[NSAutorelease alloc] init];
+id obj = [[NSObject alloc] init];
+[obj autorelease];
+[pool drain];
+</code></pre></div><p>ARC 的 case(注:<a href="https://developer.apple.com/documentation/foundation/nsautoreleasepool#//apple_ref/occ/cl/NSAutoreleasePool" target="_blank" rel="noopener noreferrer">其实 MRC 也可以这么写<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>):</p> <div class="language- extra-class"><pre class="language-text"><code>@autoreleasepool {
+    //_autorelease 为所有权修饰符。
+    id _autorelease obj = [[NSObject alloc] init];
+}
+</code></pre></div><p><code>ARC</code> 中的几点变化：</p> <ol><li><p><code>ARC</code> 中是不能使用 <code>autorelease</code> 方法，也不能使用 <code>NSAutoreleasePool</code> 类。</p></li> <li><p><code>ARC</code> 系统提供了 <code>@autoreleasepool</code> 块来替代 <code>NSAutoreleasePool</code> 对象的生成持有以及废弃的功能。</p></li> <li><p>通过将对象赋值给附加了 <code>__autoreleaseing</code> 修饰符变量来替代调用 <code>autorelease</code> 方法。即</p> <div class="language- extra-class"><pre class="language-text"><code>id obj = [[NSObject alloc] init];
+[obj autorelease];
+</code></pre></div><p>等价于</p> <div class="language- extra-class"><pre class="language-text"><code>id _autorelease obj = [[NSObject alloc] init];
+</code></pre></div></li></ol> <p>一般我们不会显式的去使用 <code>__autorelease</code> 修饰符，因为 ARC 下编译器帮我们做了一些工作，即编译器会检查方法是否以 <code>alloc/new/copy/mutableCopy</code> 开始，如果不是的话将返回的值对象注册到 <code>autoreleasePool</code>。</p> <p>不需要显式地写 <code>__autorelease</code> 的几种场景</p> <ol><li><p>自动释放池随意生成对象，不需要显式地添加 <code>autorelease</code>。</p> <div class="language- extra-class"><pre class="language-text"><code>@autoreleasepool {
+    //默认的 strong 修饰符会自动处理这种情况.
+    id obj = [[NSObject alloc] init];
+}
+</code></pre></div></li> <li><p>函数返回值的场景</p> <div class="language- extra-class"><pre class="language-text"><code>+ (NSArray *)array {
+    id obj = [[NSMutableArray alloc] init];
+    return obj;
+}
+</code></pre></div><p>在 MRC 时代，obj 是需要被发送 <code>autorelease</code> 方法的，ARC 时代不需要这么做，这个对象作为函数的返回值会自动被注册到 <code>autoreleasePool</code> 中</p></li> <li><p>访问 <code>weak</code> 变量的时肯定会涉及到 <code>autoreleasePool</code></p> <p>因为 <code>weak</code> 对对象是弱引用，对象随时会被释放，但是使用 <code>autoreleasePool</code> 会延时释放，保证 <code>weak</code> 访问过程中不会出现对象被释放这种状况。</p></li> <li><p><code>NSObject **obj</code> 其实就是 <code>NSObject *_autorelease * obj</code>。
+因为<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-SW1" target="_blank" rel="noopener noreferrer">我们不持有通过引用返回的对象<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。这种情况只能是 <code>autorelease</code>。</p></li></ol> <h2 id="autoreleasepool-的实现机制"><a href="#autoreleasepool-的实现机制" class="header-anchor">#</a> AutoreleasePool 的实现机制?</h2> <h3 id="分析过程"><a href="#分析过程" class="header-anchor">#</a> 分析过程</h3> <p>对以下代码所在文件执行 <code>clang -rewrite-objc xx.m</code> 重写命令，可以看到 OC 对应的 C++ 的源码。</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        NSLog(@&quot;Hello, World!&quot;);
+    }
+    return 0;
+}
+</code></pre></div><p>转换后的 C++ 代码。</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    /* @autoreleasepool */ { __AtAutoreleasePool __autoreleasepool;
+        NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_9w_q4lvthyn17v0cxxm5s7fsb500000gn_T_main_1280f1_mi_0);
+    }
+    return 0;
+}
+</code></pre></div><p>可以看到 <code>@autoreleasepool</code> 被转换为一个名为 <code>__AtAutoreleasePool</code> 的数据结构。</p> <div class="language- extra-class"><pre class="language-text"><code>struct __AtAutoreleasePool {
+  __AtAutoreleasePool() {atautoreleasepoolobj = objc_autoreleasePoolPush();}
+  ~__AtAutoreleasePool() {objc_autoreleasePoolPop(atautoreleasepoolobj);}
+  void * atautoreleasepoolobj;
+};
+</code></pre></div><p>main 函数其实可以理解为</p> <div class="language- extra-class"><pre class="language-text"><code>int main(int argc, const char * argv[]) {
+    {
+        void *atautoreleasepoolobj = objc_autoreleasePoolPush();
+        NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_9w_q4lvthyn17v0cxxm5s7fsb500000gn_T_main_1280f1_mi_0);
+        objc_autoreleasePoolPop(atautoreleasepoolobj);
+    }
+    return 0;
+}
+</code></pre></div><p>具体 <code>objc_autoreleasePoolPush</code> 和 <code>objc_autoreleasePoolPop</code> 的实现在 runtime 源码 <code>NSObject.mm</code>中可以找到。</p> <div class="language- extra-class"><pre class="language-text"><code>void * objc_autoreleasePoolPush(void) {
+    return AutoreleasePoolPage::push();
+}
+
+void objc_autoreleasePoolPop(void *ctxt) {
+    AutoreleasePoolPage::pop(ctxt);
+}
+</code></pre></div><h3 id="autoreleasepoolpage-的介绍"><a href="#autoreleasepoolpage-的介绍" class="header-anchor">#</a> <code>AutoreleasePoolPage</code> 的介绍</h3> <p>这里涉及到了 <code>AutoreleasePoolPage</code> 这个数据结构，接下来就看下 <code>AutoreleasePoolPage</code> 这个数据结构是啥样的？<code>AutoreleasePoolPage</code> 是个 C++ 的类</p> <div class="language- extra-class"><pre class="language-text"><code>class AutoreleasePoolPage  {
+    magic_t const magic;    //magic 用于对当前 AutoreleasePoolPage 完整性的校验
+    id *next;               //当前 autoreleasePoolPage 最上层的对象的指针。
+    pthread_t const thread; //thread 保存了当前页所在的线程
+    AutoreleasePoolPage * const parent;//指向上一个 AutoreleasePoolPage 对象.
+    AutoreleasePoolPage *child; //指向下一个 AutoreleasePoolPage 对象.
+    uint32_t const depth;
+    uint32_t hiwat;
+}
+</code></pre></div><p><strong>关于 <code>AutoreleasePoolPage</code> 的说明</strong></p> <ol><li><p>可以看到其实并没有一个整体的自动释放池对象，自动释放池是由一个双向链表构成。当一个 <code>AutoreleasePoolPage</code> 的空间被占满之后继续创建新的 <code>AutoreleasePoolPage</code> 对象。</p> <div class="language- extra-class"><pre class="language-text"><code>//child 指向的是下一个 AutoreleasePoolPage 对象的指针
+// 这个方法是当前 page 如果满的情况下创建新的 page.
+id *autoreleaseFullPage(id obj, AutoreleasePoolPage *page) {
+    do {
+        if (page-&gt;child) page = page-&gt;child;
+        else page = new AutoreleasePoolPage(page);
+    } while (page-&gt;full());
+    ....
+    return page-&gt;add(obj);
+}
+// 初始化 pool 的方法 在这个里面对 parent 和 child 进行了赋值.
+AutoreleasePoolPage(AutoreleasePoolPage *newParent)
+    : magic(), next(begin()), thread(pthread_self()),
+      parent(newParent), child(nil),
+      depth(parent ? 1+parent-&gt;depth : 0),
+      hiwat(parent ? parent-&gt;hiwat : 0) {
+    if (parent) {
+        parent-&gt;child = this;
+    }
+}
+</code></pre></div></li> <li><p>每个 <code>AutoreleasePoolPage</code> 对象都存储着当前的线程 <code>id</code> 参考上面的 <code>AutoreleasePoolPage</code> 的初始化方法。使用 <code>pthread_self()</code> 拿到当前的线程 <code>id</code> 然后保存到 <code>thread</code> 成员变量里。</p></li> <li><p><code>AutoreleasePoolPage</code> 的内存大小是 4096 个字节。是 80386 机器上的每页的字节数。</p> <div class="language- extra-class"><pre class="language-text"><code>//初始化 AutoreleasePoolPage 的方法,size 是个宏定义的 4096
+static void * operator new(size_t size) {
+    return malloc_zone_memalign(malloc_default_zone(), SIZE, SIZE);
+}
+</code></pre></div></li> <li><p><code>AutoreleasePoolPage</code> 存储 <code>autorelease</code> 对象是通过自己内部的 <code>next</code> 指针去实现。从实现上可以看到 <code>AutoreleasePoolPage</code> 还是从低内存地址向高内存地址增长。</p> <div class="language- extra-class"><pre class="language-text"><code>id *add(id obj) {
+    id *ret = next;  // faster than `return next-1` because of aliasing
+    *next++ = obj;
+    return ret;
+}
+</code></pre></div><p>由此大致能得到 <code>AutoreleasePoolPage</code> 的内存结构如图（来自 Sunny 大神博客）
+<img src="/assets/img/Jietu20180125-103109.09b0529d.png" alt="Jietu20180125-103109"></p></li></ol> <h3 id="autorelease-消息调用栈"><a href="#autorelease-消息调用栈" class="header-anchor">#</a> autorelease 消息调用栈</h3> <p>了解了这个数据结构后看下 <code>autorelease</code> 消息的调用栈。</p> <p><img src="/assets/img/15168026389568.ee9d91f9.jpg" alt="">
+我们看下 <code>AutoreleasePoolPage</code> 中 <code>autorelease</code> 方法实现其实就是将 <code>autorelease</code> 对象存储到 <code>AutoreleasePoolPage</code> 的过程。下面是大致实现的代码</p> <div class="language- extra-class"><pre class="language-text"><code>static inline id autorelease(id obj) {
+    ...
+    id *dest __unused = autoreleaseFast(obj);
+    ...
+    return obj;
+}
+//这个是将 obj 存入 AutoreleasePoolPage 的方法。
+static inline id *autoreleaseFast(id obj) {
+    //hotPage 应该是去 TLS(线程本地存储) 中获取 AutoreleasePoolPage。
+    //如果是程序刚启动的话，这儿肯定拿到的空。
+    AutoreleasePoolPage *page = hotPage();
+    if (page &amp;&amp; !page-&gt;full()) {
+        // AutoreleasePoolPage 不满的时候直接往进加
+        return page-&gt;add(obj); //绝大多数情况我们走的都是这个分支。
+    } else if (page) {
+        // AutoreleasePoolPage 满了，则创建新的 page，将 obj 放到新的 page 里去.
+        return autoreleaseFullPage(obj, page);
+    } else {
+        // 创建新的 page.
+        return autoreleaseNoPage(obj);
+    }
+}
+</code></pre></div><h3 id="autorelease-pop-消息"><a href="#autorelease-pop-消息" class="header-anchor">#</a> autorelease pop 消息</h3> <p>对应 <code>push</code> 的是 <code>pop</code>，<code>pop</code> 即为将存储到 <code>AutoreleasePoolPage</code> 的对象释放对应原型为</p> <div class="language- extra-class"><pre class="language-text"><code>void objc_autoreleasePoolPop(void *ctxt) {
+    AutoreleasePoolPage::pop(ctxt);
+}
+</code></pre></div><p>注意的是这里并没有直接传入对象，而是传入了一个 <code>ctxt</code> 的指针，根据内部实现来看，自动释放池根据 <code>ctxt</code> 拿到它当前所在的 <code>AutoreleasePoolPage</code> ，然后将 <code>AutoreleasePoolPage</code> 的 <code>ctxt</code> 的位置开始到到最新的 <code>AutoreleasePoolPage</code> 存储的 <code>autorelease</code> 对象全部释放。即我们可以理解为自动释放池代码块儿开始的时候会在 <code>AutoreleasePoolPage</code> 进行一个占位，然后将后续的 <code>autorelease</code> 对象都放到占位后，这样就能确定当前自动释放池块儿里的对象是从哪到哪，理解了这一点也就能理解 <code>autorelease</code> 的嵌套实现了。</p> <div class="language- extra-class"><pre class="language-text"><code>static inline void pop(void *token)  {
+    AutoreleasePoolPage *page; id *stop;
+    ..
+    page = pageForPointer(token); //拿到 token 所在的 AutoreleasePoolPage
+    stop = (id *)token;
+    if (*stop != POOL_BOUNDARY) {
+        if (stop == page-&gt;begin()  &amp;&amp;  !page-&gt;parent) {
+            // Start of coldest page may correctly not be POOL_BOUNDARY:
+            // 1. top-level pool is popped, leaving the cold page in place
+            // 2. an object is autoreleased with no pool
+        } else {
+            return badPop(token);
+        }
+    }
+    if (PrintPoolHiwat) printHiwat();
+    page-&gt;releaseUntil(stop);  //一直释放对象到 token 的位置.
+}
+//一直释放对象的函数
+void releaseUntil(id *stop)  {
+    while (this-&gt;next != stop) {
+        AutoreleasePoolPage *page = hotPage(); //拿到当前的 page.
+        id obj = *--page-&gt;next;
+        memset((void*)page-&gt;next, SCRIBBLE, sizeof(*page-&gt;next));
+        if (obj != POOL_BOUNDARY) {
+            objc_release(obj);  //取出对象不断发送 relesse 消息..
+        }
+    }
+    setHotPage(this);
+}
+</code></pre></div><h2 id="autoreleasepool-和-nsrunloop-有什么关系"><a href="#autoreleasepool-和-nsrunloop-有什么关系" class="header-anchor">#</a> AutoreleasePool 和 NSRunloop 有什么关系？</h2> <p>先来个实例看下 <code>Runloop</code> 是什么东西。建一个普通的 Single View App 工程。点击按钮然后在按钮点击事件里打印</p> <div class="language- extra-class"><pre class="language-text"><code>- (void)btnPressed:(id)sender {
+    NSRunLoop *runloop = [NSRunLoop currentRunLoop];
+    //在这里打断点然后 po runloop 得到下面结果。（省略大部分无关内容）
+}
+
+(lldb) po runloop
+common mode items = &lt;CFBasicHash 0x604000249360 [0x110875bb0]&gt;
+	1 : &lt;CFRunLoopObserver 0x6040001370c0 [0x110875bb0]&gt;{valid = Yes, activities = 0x1, repeats = Yes, order = -2147483647, callout = _wrapRunLoopWithAutoreleasePoolHandler (0x110a24276), ....
+	......
+	4 : &lt;CFRunLoopObserver 0x604000136ee0 [0x110875bb0]&gt;{valid = Yes, activities = 0xa0, repeats = Yes, order = 2147483647, callout = _wrapRunLoopWithAutoreleasePoolHandler (0x110a24276), ....
+</code></pre></div><p>注意看上面的 <code>activities</code>,它对应的定义是这里</p> <div class="language- extra-class"><pre class="language-text"><code>/* Run Loop Observer Activities */
+typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+    kCFRunLoopEntry = (1UL &lt;&lt; 0),
+    kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),
+    kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),
+    kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5),
+    kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),
+    kCFRunLoopExit = (1UL &lt;&lt; 7),
+    kCFRunLoopAllActivities = 0x0FFFFFFFU
+};
+</code></pre></div><p>可以确定 <code>Autorelease</code> 机制在 <code>Runloop</code> 进入和退出(和休眠前触发) <code>CommonMode</code> 的时候进行观察，当 <code>Runloop</code> 运行到指定的时机的时候回触发 <code>_wrapRunLoopWithAutoreleasePoolHandler</code> 回调方法。</p> <p><code>_wrapRunLoopWithAutoreleasePoolHandler</code> 这个方法的实现其实我们并不清楚，网上没有找到对应的实现，不过我们可以打下符号断点来看看有没有线索。果然应用刚启动就执行了这些方法。看左侧的调用栈确实是从 Observer 的回调执行过来的。下面两个是我们熟悉的 Pop 和 Push 操作，<strong>基本上可以确认，<code>Autorelease</code> 机制是在进入 <code>Runloop</code> 的时候就创建了一个新的 <code>AutoreleasePoolPage</code>。退出或者休眠的的时候回收 <code>AutoreleasePoolPage</code>。</strong></p> <p><img src="/assets/img/15170502117985.4eb2f47c.jpg" alt=""></p> <h2 id="autoreleasepool-和线程有什么关系"><a href="#autoreleasepool-和线程有什么关系" class="header-anchor">#</a> AutoreleasePool 和线程有什么关系?</h2> <p><code>Cocoa</code> 应用程序里的每个线程会自动维护一个释放池，就是通过上面 <code>Runloop</code> 的方式。但是如果没有 <code>Runloop</code> 呢？</p> <p>之前看到有人问了一个问题：子线程默认不会开启 <code>Runloop</code>，那出现 <code>Autorelease</code> 对象如何处理？不手动处理会内存泄漏吗？
+答案是不会。</p> <p>具体 demo 如下 <a href="https://stackoverflow.com/questions/24952549/does-nsthread-create-autoreleasepool-automatically-now" target="_blank" rel="noopener noreferrer">参考<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language- extra-class"><pre class="language-text"><code>- (void)viewDidLoad {
+    NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(test) object:nil];
+    [thread start];
+}
+
+-(void)test {
+    MyClass *my = [[[MyClass alloc] init] autorelease];
+    NSLog(@&quot;%@&quot;,[my description]);
+}
+</code></pre></div><p>最后的结果是 <code>MyClass</code> 实例被释放掉了。理论上来说子线程并没有 <code>Runloop</code> 也就没有自动释放池观察 <code>Runloop</code> 状态，也就不会自动去执行对应的 <code>autorelease</code> 的方法。根据引用计数来看的话，<code>autorelease</code> 方法和 <code>AutoreleasePool</code> 在一起才能发生作用，而目前又没有 <code>AutoreleasePool</code>，所以那是咋回事？</p> <p>事实上即使没有 <code>Runloop</code>，线程和 <code>AutoreleasePool</code> 也能直接发生关系。向某个对象发送 <code>autorelease</code> 消息后，会自动创建 <code>AutoreleasePoolPage</code>。<code>autorelease</code> 消息的调用栈可以参考上面的说明。最终 <code>TLS</code>(线程本地存储)会存储 <code>AutoreleasePoolPage</code> 对象。大致代码如下：</p> <div class="language- extra-class"><pre class="language-text"><code>AutoreleasePoolPage *page = new AutoreleasePoolPage(nil);
+tls_set_direct(key, (void *)page);
+</code></pre></div><p>这里具体实现比较复杂，而且根据是这种情况并不适用于主线程。可以看 <a href="https://stackoverflow.com/questions/24952549/does-nsthread-create-autoreleasepool-automatically-now" target="_blank" rel="noopener noreferrer">StackOverflow<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 的相关回答。这里不具体贴了。</p> <p>我个人觉得为了程序可读性还有稳定性，还是加上 <code>@autoreleasepool</code> 更妥。说稳定性是因为不能过度依赖于 <code>runtime</code> 的底层机制，万一 <code>runtime</code> 底层机制后续有变化可能会造成程序的异常。</p> <h2 id="什么时候需要我们手动创建-autoreleasepool"><a href="#什么时候需要我们手动创建-autoreleasepool" class="header-anchor">#</a> 什么时候需要我们手动创建 AutoreleasePool?</h2> <ol><li>如果工程只是 Foundation-Only(命令行那种),而不是 Cocoa application。那需要手动创建自动释放池。</li> <li>如果程序存活时间长，而且可能生成大量临时对象（比如循环里创建了一堆）那应该在合适地方（比如循环里）手动释放池，降低内存峰值（不用担心嵌套使用 <code>AutoreleasePool</code> 的问题）</li> <li>你创建了一个新线程，需要创建自动释放池。这个跟我们上面一小节说的是略微冲突，但是在上面已经说过了，添加 <code>AutoreleasePool</code> 是最佳实践。</li></ol> <h3 id="参考地址"><a href="#参考地址" class="header-anchor">#</a> 参考地址</h3> <p><a href="http://blog.sunnyxx.com/2014/10/15/behind-autorelease/" target="_blank" rel="noopener noreferrer">黑幕背后的 Autorelease<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://draveness.me/autoreleasepool" target="_blank" rel="noopener noreferrer">自动释放池的前世今生 ---- 深入解析 autoreleasepool<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://blog.ibireme.com/2015/05/18/runloop/" target="_blank" rel="noopener noreferrer">深入理解 RunLoop<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://www.jianshu.com/p/5559bc15490d" target="_blank" rel="noopener noreferrer">iOS 中 autorelease 的那些事儿<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://developer.apple.com/library/content/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW8" target="_blank" rel="noopener noreferrer">Transitioning to ARC Release Notes<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://developer.apple.com/documentation/foundation/nsautoreleasepool#//apple_ref/occ/cl/NSAutoreleasePool" target="_blank" rel="noopener noreferrer">NSAutoreleasePool<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmAutoreleasePools.html" target="_blank" rel="noopener noreferrer">Using Autorelease Pool Blocks<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="http://www.samirchen.com/ios-arc/" target="_blank" rel="noopener noreferrer">iOS ARC 内存管理要点<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://www.jianshu.com/p/f87f40592023" target="_blank" rel="noopener noreferrer">各个线程 Autorelease 对象的内存管理<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <footer><!----> <hr> <!----></footer></article> <div class="sticker vuepress-toc"><div class="vuepress-toc-item vuepress-toc-h2 active"><a href="#什么是-autoreleasepool-如何理解-nsautoreleasepool" title="什么是 AutoreleasePool ? 如何理解 NSAutoreleasePool?">什么是 AutoreleasePool ? 如何理解 NSAutoreleasePool?</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#arc-时代和-mrc-时代的-autoreleasepool-机制有什么区别" title="ARC 时代和 MRC 时代的 AutoreleasePool 机制有什么区别？">ARC 时代和 MRC 时代的 AutoreleasePool 机制有什么区别？</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#autoreleasepool-的实现机制" title="AutoreleasePool 的实现机制?">AutoreleasePool 的实现机制?</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#分析过程" title="分析过程">分析过程</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#autoreleasepoolpage-的介绍" title="AutoreleasePoolPage 的介绍">AutoreleasePoolPage 的介绍</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#autorelease-消息调用栈" title="autorelease 消息调用栈">autorelease 消息调用栈</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#autorelease-pop-消息" title="autorelease pop 消息">autorelease pop 消息</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#autoreleasepool-和-nsrunloop-有什么关系" title="AutoreleasePool 和 NSRunloop 有什么关系？">AutoreleasePool 和 NSRunloop 有什么关系？</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#autoreleasepool-和线程有什么关系" title="AutoreleasePool 和线程有什么关系?">AutoreleasePool 和线程有什么关系?</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#什么时候需要我们手动创建-autoreleasepool" title="什么时候需要我们手动创建 AutoreleasePool?">什么时候需要我们手动创建 AutoreleasePool?</a></div><div class="vuepress-toc-item vuepress-toc-h3"><a href="#参考地址" title="参考地址">参考地址</a></div></div></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8></ul></div></footer></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.2cedb1d8.js" defer></script><script src="/assets/js/29.309f71c0.js" defer></script><script src="/assets/js/3.e78f3171.js" defer></script><script src="/assets/js/31.c2accd33.js" defer></script>
+  </body>
+</html>

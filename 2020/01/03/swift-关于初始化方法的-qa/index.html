@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Swift 关于初始化方法的 QA | fanthus&#39;s blog</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/logo.jpg">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-152x152.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3eaf7c">
+    <script async="true" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3512514942188386" crossorigin="anonymous"></script>
+    <script async="true" src="https://www.googletagmanager.com/gtag/js?id=G-MEH5F43SVB"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-MEH5F43SVB');</script>
+    <script>console.log("my name is fanthus, hope my blog bring new ideas to you.");</script>
+    <meta name="description" content="Q: swift 和 OC 初始化（init）方法的区别？ Swift 的初始化方法和普通的 swift 方法有什么区别的点吗？
+
+init() {
+    desktop = &quot;桌子&quot;
+}
+
+A: 和 OC 的初始化方法相比
+1 - 初始化顺序的区别， swift 先初始化自己的成员变量，然后在调用父类的初始化方法，OC 的调用则相反
+2 - swift 不需要 retu ...">
+    <meta name="theme-color" content="#3eaf7c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-TileImage" content="/icons/msapplication-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    
+    <link rel="preload" href="/assets/css/0.styles.232103a7.css" as="style"><link rel="preload" href="/assets/js/app.2cedb1d8.js" as="script"><link rel="preload" href="/assets/js/29.309f71c0.js" as="script"><link rel="preload" href="/assets/js/3.e78f3171.js" as="script"><link rel="preload" href="/assets/js/56.1041c5f3.js" as="script"><link rel="prefetch" href="/assets/js/10.4cd31608.js"><link rel="prefetch" href="/assets/js/100.3443112a.js"><link rel="prefetch" href="/assets/js/101.e0037931.js"><link rel="prefetch" href="/assets/js/102.f4c7589f.js"><link rel="prefetch" href="/assets/js/103.0df46cd4.js"><link rel="prefetch" href="/assets/js/104.17a0ee44.js"><link rel="prefetch" href="/assets/js/105.57832bba.js"><link rel="prefetch" href="/assets/js/106.680eda55.js"><link rel="prefetch" href="/assets/js/107.410f297e.js"><link rel="prefetch" href="/assets/js/108.fb80d3ad.js"><link rel="prefetch" href="/assets/js/109.699c7520.js"><link rel="prefetch" href="/assets/js/11.7393e510.js"><link rel="prefetch" href="/assets/js/110.d4f0aca9.js"><link rel="prefetch" href="/assets/js/111.372545eb.js"><link rel="prefetch" href="/assets/js/112.bc127403.js"><link rel="prefetch" href="/assets/js/113.414e616f.js"><link rel="prefetch" href="/assets/js/114.d8c4fe8d.js"><link rel="prefetch" href="/assets/js/115.279ec90c.js"><link rel="prefetch" href="/assets/js/116.c60ac54a.js"><link rel="prefetch" href="/assets/js/117.15c04390.js"><link rel="prefetch" href="/assets/js/118.f9d8228c.js"><link rel="prefetch" href="/assets/js/119.719d77b5.js"><link rel="prefetch" href="/assets/js/12.c35fa779.js"><link rel="prefetch" href="/assets/js/120.cf48f47a.js"><link rel="prefetch" href="/assets/js/121.4aad0ac7.js"><link rel="prefetch" href="/assets/js/122.15f2b5ef.js"><link rel="prefetch" href="/assets/js/123.4dea98c9.js"><link rel="prefetch" href="/assets/js/124.0152be90.js"><link rel="prefetch" href="/assets/js/125.ecf56222.js"><link rel="prefetch" href="/assets/js/126.50fe6660.js"><link rel="prefetch" href="/assets/js/127.28abe492.js"><link rel="prefetch" href="/assets/js/128.48a0862c.js"><link rel="prefetch" href="/assets/js/129.77b2b203.js"><link rel="prefetch" href="/assets/js/13.35658260.js"><link rel="prefetch" href="/assets/js/130.d0ef4952.js"><link rel="prefetch" href="/assets/js/131.55b00f57.js"><link rel="prefetch" href="/assets/js/14.4e33e6a2.js"><link rel="prefetch" href="/assets/js/15.345a84a1.js"><link rel="prefetch" href="/assets/js/16.3d596c76.js"><link rel="prefetch" href="/assets/js/17.3e2e1a7a.js"><link rel="prefetch" href="/assets/js/18.c8e88810.js"><link rel="prefetch" href="/assets/js/19.f0e3f187.js"><link rel="prefetch" href="/assets/js/20.cb5c866b.js"><link rel="prefetch" href="/assets/js/21.b83191ac.js"><link rel="prefetch" href="/assets/js/22.bea483cb.js"><link rel="prefetch" href="/assets/js/23.3877c278.js"><link rel="prefetch" href="/assets/js/24.0524a7e6.js"><link rel="prefetch" href="/assets/js/25.3f3c78fe.js"><link rel="prefetch" href="/assets/js/26.3f72710f.js"><link rel="prefetch" href="/assets/js/27.f35bb8e9.js"><link rel="prefetch" href="/assets/js/28.5e29b9fe.js"><link rel="prefetch" href="/assets/js/30.a60200be.js"><link rel="prefetch" href="/assets/js/31.c2accd33.js"><link rel="prefetch" href="/assets/js/32.41be2bbb.js"><link rel="prefetch" href="/assets/js/33.8447af66.js"><link rel="prefetch" href="/assets/js/34.122a4606.js"><link rel="prefetch" href="/assets/js/35.fa9f0fe8.js"><link rel="prefetch" href="/assets/js/36.ffc459c1.js"><link rel="prefetch" href="/assets/js/37.12421aeb.js"><link rel="prefetch" href="/assets/js/38.66884bf5.js"><link rel="prefetch" href="/assets/js/39.4901c209.js"><link rel="prefetch" href="/assets/js/4.41416bc4.js"><link rel="prefetch" href="/assets/js/40.726f0f90.js"><link rel="prefetch" href="/assets/js/41.1466329e.js"><link rel="prefetch" href="/assets/js/42.ad110115.js"><link rel="prefetch" href="/assets/js/43.42f6c87f.js"><link rel="prefetch" href="/assets/js/44.38a3ffda.js"><link rel="prefetch" href="/assets/js/45.54729d58.js"><link rel="prefetch" href="/assets/js/46.688f019f.js"><link rel="prefetch" href="/assets/js/47.069217c5.js"><link rel="prefetch" href="/assets/js/48.0227b0c3.js"><link rel="prefetch" href="/assets/js/49.7a3d3511.js"><link rel="prefetch" href="/assets/js/5.9be8c1b7.js"><link rel="prefetch" href="/assets/js/50.35d1d592.js"><link rel="prefetch" href="/assets/js/51.7e7b901a.js"><link rel="prefetch" href="/assets/js/52.f693d3ed.js"><link rel="prefetch" href="/assets/js/53.c4c4d1a2.js"><link rel="prefetch" href="/assets/js/54.eab66332.js"><link rel="prefetch" href="/assets/js/55.7e80dbb1.js"><link rel="prefetch" href="/assets/js/57.a7c1bc68.js"><link rel="prefetch" href="/assets/js/58.c07c376a.js"><link rel="prefetch" href="/assets/js/59.8b20d651.js"><link rel="prefetch" href="/assets/js/6.1724a888.js"><link rel="prefetch" href="/assets/js/60.417e91a2.js"><link rel="prefetch" href="/assets/js/61.4db451fd.js"><link rel="prefetch" href="/assets/js/62.8f0bdaac.js"><link rel="prefetch" href="/assets/js/63.911f46a9.js"><link rel="prefetch" href="/assets/js/64.60deeb3e.js"><link rel="prefetch" href="/assets/js/65.201e0e08.js"><link rel="prefetch" href="/assets/js/66.248f04bf.js"><link rel="prefetch" href="/assets/js/67.500ae9a1.js"><link rel="prefetch" href="/assets/js/68.a95fd5e5.js"><link rel="prefetch" href="/assets/js/69.24aaae86.js"><link rel="prefetch" href="/assets/js/7.934b58e4.js"><link rel="prefetch" href="/assets/js/70.ec2f6ce6.js"><link rel="prefetch" href="/assets/js/71.b454fdd6.js"><link rel="prefetch" href="/assets/js/72.74299778.js"><link rel="prefetch" href="/assets/js/73.3cd8645d.js"><link rel="prefetch" href="/assets/js/74.d5accf5c.js"><link rel="prefetch" href="/assets/js/75.2d01044b.js"><link rel="prefetch" href="/assets/js/76.f31f74e1.js"><link rel="prefetch" href="/assets/js/77.3b826970.js"><link rel="prefetch" href="/assets/js/78.b7547141.js"><link rel="prefetch" href="/assets/js/79.5d0ef470.js"><link rel="prefetch" href="/assets/js/8.2a195ce5.js"><link rel="prefetch" href="/assets/js/80.0b0b5a17.js"><link rel="prefetch" href="/assets/js/81.24f2588e.js"><link rel="prefetch" href="/assets/js/82.f8c84af4.js"><link rel="prefetch" href="/assets/js/83.7fff9a1b.js"><link rel="prefetch" href="/assets/js/84.c0208c2c.js"><link rel="prefetch" href="/assets/js/85.e363b25e.js"><link rel="prefetch" href="/assets/js/86.5837e9f1.js"><link rel="prefetch" href="/assets/js/87.3e2f38a0.js"><link rel="prefetch" href="/assets/js/88.d3958f6f.js"><link rel="prefetch" href="/assets/js/89.ec3fdee0.js"><link rel="prefetch" href="/assets/js/9.c0adb174.js"><link rel="prefetch" href="/assets/js/90.94654c43.js"><link rel="prefetch" href="/assets/js/91.76b106e7.js"><link rel="prefetch" href="/assets/js/92.69e5bf8b.js"><link rel="prefetch" href="/assets/js/93.3d4a8f29.js"><link rel="prefetch" href="/assets/js/94.202d1036.js"><link rel="prefetch" href="/assets/js/95.002d5790.js"><link rel="prefetch" href="/assets/js/96.044893c5.js"><link rel="prefetch" href="/assets/js/97.c6dec31d.js"><link rel="prefetch" href="/assets/js/98.20673f07.js"><link rel="prefetch" href="/assets/js/99.fa4a2cf2.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.91ff346d.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.232103a7.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">fanthus's blog </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">Blog</a></li><li class="nav-item"><a href="/tag/" class="nav-link">Tags</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">fanthus's blog </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">Blog</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">Tags</a></li> <li class="mobile-nav-item"><!----></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        Swift 关于初始化方法的 QA
+      </h1> <div class="post-meta"><!----> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2020-01-03T18:44:39.000Z">
+      Fri Jan 03 2020
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/Swift" data-v-42ccfcd5><span data-v-42ccfcd5>Swift</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><p><strong>Q: swift 和 OC 初始化（init）方法的区别？ Swift 的初始化方法和普通的 swift 方法有什么区别的点吗？</strong></p> <div class="language- extra-class"><pre class="language-text"><code>init() {
+    desktop = &quot;桌子&quot;
+}
+</code></pre></div><p>A: 和 OC 的初始化方法相比
+1 - 初始化顺序的区别， swift 先初始化自己的成员变量，然后在调用父类的初始化方法，OC 的调用则相反
+2 - swift 不需要 return 方法，写就行了
+3 - swift 子类默认不继承父类的初始化方法，但是遇到一些 case 是自动继承的。 参考这里 Automatic Initializer Inheritance
+和普通的 swift 方法相比
+1 - 没有 func 关键字，只有 init 关键字
+Note -
+1 - 但是和普通的 swift 方法一样，后面的参数的语法是一样的，即下面这种初始化方法完全没有问题.</p> <div class="language- extra-class"><pre class="language-text"><code>class House {
+    let desktop:String    #Note-这儿是 let 照样可以在初始化方法中赋值!
+    init(with desktop:String) {
+        self.desktop = desktop
+    }
+}
+</code></pre></div><p><strong>Q: swift 中什么是初始化委托(Initializer delegation)，有啥用??</strong>
+A: 就是在一个初始化方法中调用另外一个初始化方法，作用是可以减少重复的初始化代码。
+这个难点在于，类的是支持继承的（结构体/枚举不支持继承相对简单，直接本类提供对应方法即可），需要保证存储属性的初始化一致。
+举个官方的例子 -</p> <div class="language- extra-class"><pre class="language-text"><code>struct Rect {
+    var origin = Point()
+    var size = Size()
+    init() {}
+    init(origin: Point, size: Size) {
+        self.origin = origin
+        self.size = size
+    }
+}
+extension Rect {         //初始化方法放在 Extension 更合适.
+    init(center: Point, size: Size) {
+        let originX = center.x - (size.width / 2)
+        let originY = center.y - (size.height / 2)
+        self.init(origin: Point(x: originX, y: originY), size: size)
+    }
+}
+</code></pre></div><p>参考地址:
+1 - <a href="https://docs.swift.org/swift-book/LanguageGuide/Initialization.html" target="_blank" rel="noopener noreferrer">Initializer Delegation for Value Types<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> #Swift 官方的说明
+2 - <a href="https://docs.swift.org/swift-book/LanguageGuide/Extensions.html" target="_blank" rel="noopener noreferrer">Extensions -&gt; Initializers<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> #Swift 官方的说明</p> <p><strong>Q: 下面这种写法有问题吗？会编译报错吗？</strong></p> <div class="language- extra-class"><pre class="language-text"><code>class People {
+    var mount:Int = 0
+}
+class ChinesePeople: People {
+    var name:String
+    init(name:String) {
+        self.name = name  //这儿没有调用父类的 super.init()
+    }
+}
+</code></pre></div><p>A: 没问题，不会编译报错。这儿其实是在 self.name = name 后面隐式调用了 super.init() 方法.. 能这么做的原因是所有的 stored property 都已经被初始化了..
+Note
+1 - 很多时候衡量初始化方法合理不合理的一个重要指标就是「是否所有的存储属性在初始化完毕之后都被赋值了」.. 上面这个例子之所以没有报错也是因为 mount 已经赋值了.</p> <p><strong>Q: 下面这种 case 执行的时候会执行父类的 CustomTT… ?</strong></p> <div class="language- extra-class"><pre class="language-text"><code>let ttc = TTClass()
+class CustomTT {
+    init() {
+        print(&quot;CustomTT”)
+    }
+}
+class TTClass: CustomTT {
+    override init() {
+        print(&quot;TTClass”)
+    }
+}
+</code></pre></div><p>A: 会.. 理论上复写的话只会走子类的方法，但是初始化方法比较特殊，它会隐式的调用父类的初始化方法来完成初始话过程.</p> <blockquote><p>Instead of making an explicit call to super.init(), this initializer relies on an implicit call to its superclass’s initializer to complete the process.</p></blockquote> <p>参考地址:
+1 - <a href="https://docs.swift.org/swift-book/LanguageGuide/Initialization.html" target="_blank" rel="noopener noreferrer">Swift - Initialization<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><strong>Q: Swift 初始化方法 designated Initializers 和 convenience Initializers 是干嘛的有啥区别？</strong>
+A: designated initializers 是一个类的主要的初始化方法。它做了点啥呢？主要就是初始化当前类的所有存储属性，以及通过调用父类的合适的初始化方法来继续完成初始化。一般来说一个类必须要有一个
+convenience initializers 相对来说并不是主要的初始化方法，所以从字面意思来说是「便捷的初始化方法」，这个便捷初始化方法类可以没有。
+Swift 官方给出的 convenience/designated initializers 的三个法则 -
+1 - designated initializer 必须调用父类相关的 designated initializer，举下面这个例子-</p> <div class="language- extra-class"><pre class="language-text"><code>class People {
+    var mount:Int
+    init(with mount:Int) {
+        self.mount = mount
+    }
+}
+class ChinesePeople: People {
+    var country:String
+    override init(with mount: Int) {
+        country = “china&quot;
+        //Note
+        //1 - 这儿必须调用同样的 designated initializer 方法.
+        //2 - 如果不调用会报编译错误: 'super.init' isn't called on all paths before returning from initializer
+        //3 - 如果调用 super.init() 报编译错误:  Missing argument for parameter 'with' in call
+        super.init(with: mount)
+    }
+}
+</code></pre></div><p>2 - convenience initializer 必须调用类中另外一个初始化方法.</p> <div class="language- extra-class"><pre class="language-text"><code>let chinesePeople = ChinesePeople.init(country: “Chinese”)  #使用 convenience 进行初始化
+class People {
+    var mount:Int
+    init(with mount:Int) {
+        self.mount = mount
+    }
+}
+
+class ChinesePeople: People {
+    var country:String
+    init(with mount: Int,country:String) {
+        self.country = country
+        super.init(with: mount)
+    }
+    convenience init(country:String) {
+        //Note
+        //1 - 必须要调用另外一个初始化方法.
+        //2 - 不能直接调用调用父类的的初始化方法，否则会报编译错误:Convenience initializer for 'ChinesePeople' must delegate (with 'self.init') rather than chaining to a superclass initializer (with 'super.init')
+        self.init(with:14亿人, country:country)
+    }
+}
+</code></pre></div><p>3 - convenience initializer 必须最终调用一个 designated initializer 方法</p> <p>Note
+1 - Swift 类的初始化方法复杂在哪，我个人感觉就是在于引入复杂的继承体系后，初始化变得非常复杂。
+2 - 通常来说大部分的类都只有一个 designated initializers，这很好理解，因为太多的 designated initializers 会让调用者感到迷惑，我究竟应该用哪个，而且也不利于开发者自己维护。
+3 - convenience initializer 一般都是只能在同一个类层级中进行调用，即不能直接调用父类的初始化方法。而 designated initializers 是只能调用父类的。可以参考下面这张图...</p> <p><img src="/assets/img/Jietu20200103-190332.022ec472.png" alt="Jietu20200103-190332"></p> <p>参考地址:
+1 - <a href="https://docs.swift.org/swift-book/LanguageGuide/Initialization.html" target="_blank" rel="noopener noreferrer">Swift - Designated Initializers and Convenience Initializers<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><strong>Q: 默认初始化方法和 designated initializer 是啥关系？</strong>
+A: 通常对于一个类来说，默认初始化方法就是 designated initializer</p> <blockquote><p>“The default initializer (when available) is always a designated initializer for a class”</p></blockquote> <p><strong>Q: 还是关于 designated initializer 的问题，考虑下面这种 case 到底哪个是 designated initializer?</strong></p> <div class="language- extra-class"><pre class="language-text"><code>class People {
+    var mount:Int
+    init() {
+        mount = 0
+    }
+    init(with mount:Int) {
+        self.mount = mount
+    }
+}
+</code></pre></div><p>A: 首先考虑一下 designated initializer 定义吧..
+“A designated initializer fully initializes all properties introduced by that class and calls an appropriate superclass initializer to continue the initialization process up the superclass chain”
+所以尽管一个类倾向于尽可能少的 designated initializer，但这两种都算是 designated initializer。
+Note
+1 - 其实理论上上面这两种的实现基本上没有啥差别，只不过一个是使用默认值，一个使用外部参数。</p> <p><strong>Q: Two-Phase Initialization 是啥意思？有啥用？</strong>
+A: Two-Phase Initialization 中文翻译过来就是「两阶段初始化」，两阶段都做啥了？
+第一阶段：所有存储属性都被赋初始值。
+第二阶段：当前类有机会在实例使用前对存储属性进行自定制。</p> <div class="language- extra-class"><pre class="language-text"><code>class Vehicle {
+    var numberOfWheels = 0
+}
+class Bicycle: Vehicle {
+    override init() {
+        super.init()            //这是第一阶段
+        numberOfWheels = 2      //这是第二阶段
+    }
+}
+</code></pre></div><p>Note
+1 - 两阶段初始化其实并不是什么新技术，而是 Swift 官方的一个提示「告诉你在继承体系中如何正确的初始化存储属性的方式」</p> <p><strong>Q: 我太难了，所以作为子类(subclass)怎么正确实现自己的初始方法呢？</strong>
+A: 我觉得应该分为三步
+1 - 初始化自己的属性
+2 - 调用父类的 designated initializer
+3 - 修改父类的属性
+举个例子 -</p> <div class="language- extra-class"><pre class="language-text"><code>class Vehicle {
+    var numberOfWheels = 0
+}
+class Bicycle: Vehicle {
+    var isMobike:Bool
+    override init() {
+        isMobike = false        //1 - 初始化子类自己的独有属性
+        super.init()            //2 - 调用父类的 designated initializer
+        numberOfWheels = 2      //3 - 修改父类的属性
+    }
+}
+</code></pre></div><p><strong>Q: 有的 init 方法之前要加 requried 是为啥??</strong>
+A: 一个类的初始化方法前面加 requried 那要求继承当前类的所有子类都要加上 requried.
+Note
+1 - 如果当前类已经用 requried 标记初始化方法的话，子类再复写的话就不用加 override 关键字了..</p> <p>参考地址:
+1 - <a href="https://docs.swift.org/swift-book/LanguageGuide/Initialization.html#ID222" target="_blank" rel="noopener noreferrer">Initialization - Required Initializers<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> #Swift 官方的说明</p> <p><strong>Q: ViewController 的初始化方法应该怎么写？为啥下面这种方式会报错？</strong></p> <div class="language- extra-class"><pre class="language-text"><code>class TTViewController: UIViewController {
+    init() {
+        super.init()  #CompileError:Must call a designated initializer of the superclass 'UIViewController'
+    }
+}
+</code></pre></div><p>A: 我觉得首先看下面这种 case 自定制视图控制器(从代码模板生成，别的啥都不动)调用 init() 方法就不行.为啥呢?</p> <div class="language- extra-class"><pre class="language-text"><code>UIViewController.init()  #CompileOK
+TTViewController.init()  #CompileError Missing argument for parameter 'coder' in call
+</code></pre></div><p>因为 swift 里默认是不继承初始化方法的，只是在一些 case 里才会继承。Swift 也没有提供默认的初始化方法。
+那么就引入了当前问题，如何自定制初始化方法呢？
+继承 UIViewController 的 TTViewController 默认没有 init 方法，所以我们可以自定制 Init 方法
+方法一
+直接实现 init() 方法并在里面调用 init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) 方法，API 说明里表示这个方法是 designated initializer 方法</p> <div class="language- extra-class"><pre class="language-text"><code>init() {
+    super.init(nibName: nil, bundle: nil)
+}
+</code></pre></div><p>方法二 #网上提供的一种方法，但是亲测会报错</p> <div class="language- extra-class"><pre class="language-text"><code>convenience init() {
+    self.init(nibName:nil, bundle:nil) #CompilerError:Ambiguous reference to member 'init()'
+}
+</code></pre></div><p>然后子类就可以愉快的通过 TTViewController.init() 这种方式初始化视图控制器了… 要不然还得 TTViewController.init(nib:nil, bundle:nil)...</p> <p>Note
+1 - init 方法在 UIViewController 的子类里属于自定制方法，并不属于默认方法.</p> <p>参考地址:
+1 - <a href="https://stackoverflow.com/Questions/24036393/Fatal-Error-use-of-unimplemented-initializer-initcoder-for-class" target="_blank" rel="noopener noreferrer">Fatal error: use of unimplemented initializer 'init(coder:)' for class<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>
+2 - <a href="https://stackoverflow.com/questions/24095037/why-cant-i-call-the-default-super-init-on-uiviewcontroller-in-swift" target="_blank" rel="noopener noreferrer">Why can't I call the default super.init() on UIViewController in Swift?<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>
+3 - <a href="https://stackoverflow.com/questions/28371701/how-does-uiviewcontroller-manage-to-have-a-default-no-args-initializer-in-swift" target="_blank" rel="noopener noreferrer">How does UIViewController manage to have a default no-args initializer in Swift?<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><strong>Q: initWithCoder 是啥初始化方法? 为啥自定制 UIViewController init 方法必须实现这个方法，不实现就报错..</strong>
+A: 自定制 UIViewController 初始化方法必须调用它提供的 designated initializer -&gt; init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) 而这个方法本质是通过 coder 实现的，所以必须实现 initWithCoder 方法。尽管我们自定制以及使用 UIViewController 的时候是从代码直接初始化的，并没有用到 nib 文件，但是为了保证实现的完整性，需要默认实现这个方法</p> <blockquote><p>When instantiating a view controller from a storyboard, iOS initializes the new view controller by calling its init(coder:) method instead of this method and sets the nibName property to a nib file stored inside the storyboard.</p></blockquote> <p>系统提供的默认试下如下，大概意思是如果你有一天通过 nib 初始化了，就必须要在这个里面做点事儿，否则就崩给你看。</p> <div class="language- extra-class"><pre class="language-text"><code>required init?(coder: NSCoder) {
+    fatalError(&quot;init(coder:) has not been implemented&quot;)
+}
+</code></pre></div><p>参考地址:
+1 - <a href="https://stackoverflow.com/questions/34377156/uiviewcontroller-and-required-initcoder" target="_blank" rel="noopener noreferrer">UIViewController and required init?(coder: )<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <footer><!----> <hr> <!----></footer></article> <!----></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8></ul></div></footer></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.2cedb1d8.js" defer></script><script src="/assets/js/29.309f71c0.js" defer></script><script src="/assets/js/3.e78f3171.js" defer></script><script src="/assets/js/56.1041c5f3.js" defer></script>
+  </body>
+</html>

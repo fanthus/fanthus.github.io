@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Objective-C 里的拷贝 | fanthus&#39;s blog</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="icon" href="/logo.jpg">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-152x152.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3eaf7c">
+    <script async="true" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3512514942188386" crossorigin="anonymous"></script>
+    <script async="true" src="https://www.googletagmanager.com/gtag/js?id=G-MEH5F43SVB"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-MEH5F43SVB');</script>
+    <script>console.log("my name is fanthus, hope my blog bring new ideas to you.");</script>
+    <meta name="description" content="Objective-C 语言里的拷贝就是对象拷贝，即创建一个跟之前的实例对象一模一样的对象。一般来说数据模型类是需要支持拷贝的。Objective-C 里拷贝又分为浅拷贝（shallow-copy）和深拷贝（deep-copy）。
+
+浅拷贝和深拷贝区别
+
+浅拷贝只是复制一下对象指针，但是拷贝前和拷贝后的对象指针均指向同一内存区域，只不过是对象的内存引用计数加一。
+深拷贝为拷贝前 ...">
+    <meta name="theme-color" content="#3eaf7c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-TileImage" content="/icons/msapplication-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    
+    <link rel="preload" href="/assets/css/0.styles.232103a7.css" as="style"><link rel="preload" href="/assets/js/app.2cedb1d8.js" as="script"><link rel="preload" href="/assets/js/29.309f71c0.js" as="script"><link rel="preload" href="/assets/js/3.e78f3171.js" as="script"><link rel="preload" href="/assets/js/40.726f0f90.js" as="script"><link rel="prefetch" href="/assets/js/10.4cd31608.js"><link rel="prefetch" href="/assets/js/100.3443112a.js"><link rel="prefetch" href="/assets/js/101.e0037931.js"><link rel="prefetch" href="/assets/js/102.f4c7589f.js"><link rel="prefetch" href="/assets/js/103.0df46cd4.js"><link rel="prefetch" href="/assets/js/104.17a0ee44.js"><link rel="prefetch" href="/assets/js/105.57832bba.js"><link rel="prefetch" href="/assets/js/106.680eda55.js"><link rel="prefetch" href="/assets/js/107.410f297e.js"><link rel="prefetch" href="/assets/js/108.fb80d3ad.js"><link rel="prefetch" href="/assets/js/109.699c7520.js"><link rel="prefetch" href="/assets/js/11.7393e510.js"><link rel="prefetch" href="/assets/js/110.d4f0aca9.js"><link rel="prefetch" href="/assets/js/111.372545eb.js"><link rel="prefetch" href="/assets/js/112.bc127403.js"><link rel="prefetch" href="/assets/js/113.414e616f.js"><link rel="prefetch" href="/assets/js/114.d8c4fe8d.js"><link rel="prefetch" href="/assets/js/115.279ec90c.js"><link rel="prefetch" href="/assets/js/116.c60ac54a.js"><link rel="prefetch" href="/assets/js/117.15c04390.js"><link rel="prefetch" href="/assets/js/118.f9d8228c.js"><link rel="prefetch" href="/assets/js/119.719d77b5.js"><link rel="prefetch" href="/assets/js/12.c35fa779.js"><link rel="prefetch" href="/assets/js/120.cf48f47a.js"><link rel="prefetch" href="/assets/js/121.4aad0ac7.js"><link rel="prefetch" href="/assets/js/122.15f2b5ef.js"><link rel="prefetch" href="/assets/js/123.4dea98c9.js"><link rel="prefetch" href="/assets/js/124.0152be90.js"><link rel="prefetch" href="/assets/js/125.ecf56222.js"><link rel="prefetch" href="/assets/js/126.50fe6660.js"><link rel="prefetch" href="/assets/js/127.28abe492.js"><link rel="prefetch" href="/assets/js/128.48a0862c.js"><link rel="prefetch" href="/assets/js/129.77b2b203.js"><link rel="prefetch" href="/assets/js/13.35658260.js"><link rel="prefetch" href="/assets/js/130.d0ef4952.js"><link rel="prefetch" href="/assets/js/131.55b00f57.js"><link rel="prefetch" href="/assets/js/14.4e33e6a2.js"><link rel="prefetch" href="/assets/js/15.345a84a1.js"><link rel="prefetch" href="/assets/js/16.3d596c76.js"><link rel="prefetch" href="/assets/js/17.3e2e1a7a.js"><link rel="prefetch" href="/assets/js/18.c8e88810.js"><link rel="prefetch" href="/assets/js/19.f0e3f187.js"><link rel="prefetch" href="/assets/js/20.cb5c866b.js"><link rel="prefetch" href="/assets/js/21.b83191ac.js"><link rel="prefetch" href="/assets/js/22.bea483cb.js"><link rel="prefetch" href="/assets/js/23.3877c278.js"><link rel="prefetch" href="/assets/js/24.0524a7e6.js"><link rel="prefetch" href="/assets/js/25.3f3c78fe.js"><link rel="prefetch" href="/assets/js/26.3f72710f.js"><link rel="prefetch" href="/assets/js/27.f35bb8e9.js"><link rel="prefetch" href="/assets/js/28.5e29b9fe.js"><link rel="prefetch" href="/assets/js/30.a60200be.js"><link rel="prefetch" href="/assets/js/31.c2accd33.js"><link rel="prefetch" href="/assets/js/32.41be2bbb.js"><link rel="prefetch" href="/assets/js/33.8447af66.js"><link rel="prefetch" href="/assets/js/34.122a4606.js"><link rel="prefetch" href="/assets/js/35.fa9f0fe8.js"><link rel="prefetch" href="/assets/js/36.ffc459c1.js"><link rel="prefetch" href="/assets/js/37.12421aeb.js"><link rel="prefetch" href="/assets/js/38.66884bf5.js"><link rel="prefetch" href="/assets/js/39.4901c209.js"><link rel="prefetch" href="/assets/js/4.41416bc4.js"><link rel="prefetch" href="/assets/js/41.1466329e.js"><link rel="prefetch" href="/assets/js/42.ad110115.js"><link rel="prefetch" href="/assets/js/43.42f6c87f.js"><link rel="prefetch" href="/assets/js/44.38a3ffda.js"><link rel="prefetch" href="/assets/js/45.54729d58.js"><link rel="prefetch" href="/assets/js/46.688f019f.js"><link rel="prefetch" href="/assets/js/47.069217c5.js"><link rel="prefetch" href="/assets/js/48.0227b0c3.js"><link rel="prefetch" href="/assets/js/49.7a3d3511.js"><link rel="prefetch" href="/assets/js/5.9be8c1b7.js"><link rel="prefetch" href="/assets/js/50.35d1d592.js"><link rel="prefetch" href="/assets/js/51.7e7b901a.js"><link rel="prefetch" href="/assets/js/52.f693d3ed.js"><link rel="prefetch" href="/assets/js/53.c4c4d1a2.js"><link rel="prefetch" href="/assets/js/54.eab66332.js"><link rel="prefetch" href="/assets/js/55.7e80dbb1.js"><link rel="prefetch" href="/assets/js/56.1041c5f3.js"><link rel="prefetch" href="/assets/js/57.a7c1bc68.js"><link rel="prefetch" href="/assets/js/58.c07c376a.js"><link rel="prefetch" href="/assets/js/59.8b20d651.js"><link rel="prefetch" href="/assets/js/6.1724a888.js"><link rel="prefetch" href="/assets/js/60.417e91a2.js"><link rel="prefetch" href="/assets/js/61.4db451fd.js"><link rel="prefetch" href="/assets/js/62.8f0bdaac.js"><link rel="prefetch" href="/assets/js/63.911f46a9.js"><link rel="prefetch" href="/assets/js/64.60deeb3e.js"><link rel="prefetch" href="/assets/js/65.201e0e08.js"><link rel="prefetch" href="/assets/js/66.248f04bf.js"><link rel="prefetch" href="/assets/js/67.500ae9a1.js"><link rel="prefetch" href="/assets/js/68.a95fd5e5.js"><link rel="prefetch" href="/assets/js/69.24aaae86.js"><link rel="prefetch" href="/assets/js/7.934b58e4.js"><link rel="prefetch" href="/assets/js/70.ec2f6ce6.js"><link rel="prefetch" href="/assets/js/71.b454fdd6.js"><link rel="prefetch" href="/assets/js/72.74299778.js"><link rel="prefetch" href="/assets/js/73.3cd8645d.js"><link rel="prefetch" href="/assets/js/74.d5accf5c.js"><link rel="prefetch" href="/assets/js/75.2d01044b.js"><link rel="prefetch" href="/assets/js/76.f31f74e1.js"><link rel="prefetch" href="/assets/js/77.3b826970.js"><link rel="prefetch" href="/assets/js/78.b7547141.js"><link rel="prefetch" href="/assets/js/79.5d0ef470.js"><link rel="prefetch" href="/assets/js/8.2a195ce5.js"><link rel="prefetch" href="/assets/js/80.0b0b5a17.js"><link rel="prefetch" href="/assets/js/81.24f2588e.js"><link rel="prefetch" href="/assets/js/82.f8c84af4.js"><link rel="prefetch" href="/assets/js/83.7fff9a1b.js"><link rel="prefetch" href="/assets/js/84.c0208c2c.js"><link rel="prefetch" href="/assets/js/85.e363b25e.js"><link rel="prefetch" href="/assets/js/86.5837e9f1.js"><link rel="prefetch" href="/assets/js/87.3e2f38a0.js"><link rel="prefetch" href="/assets/js/88.d3958f6f.js"><link rel="prefetch" href="/assets/js/89.ec3fdee0.js"><link rel="prefetch" href="/assets/js/9.c0adb174.js"><link rel="prefetch" href="/assets/js/90.94654c43.js"><link rel="prefetch" href="/assets/js/91.76b106e7.js"><link rel="prefetch" href="/assets/js/92.69e5bf8b.js"><link rel="prefetch" href="/assets/js/93.3d4a8f29.js"><link rel="prefetch" href="/assets/js/94.202d1036.js"><link rel="prefetch" href="/assets/js/95.002d5790.js"><link rel="prefetch" href="/assets/js/96.044893c5.js"><link rel="prefetch" href="/assets/js/97.c6dec31d.js"><link rel="prefetch" href="/assets/js/98.20673f07.js"><link rel="prefetch" href="/assets/js/99.fa4a2cf2.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.91ff346d.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.232103a7.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">fanthus's blog </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">Blog</a></li><li class="nav-item"><a href="/tag/" class="nav-link">Tags</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">fanthus's blog </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">Blog</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">Tags</a></li> <li class="mobile-nav-item"><!----></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        Objective-C 里的拷贝
+      </h1> <div class="post-meta"><!----> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2018-03-05T18:21:42.000Z">
+      Mon Mar 05 2018
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/iOS" data-v-42ccfcd5><span data-v-42ccfcd5>iOS</span></a></li><li class="post-tag" data-v-42ccfcd5><a href="/tag/Objective-C" data-v-42ccfcd5><span data-v-42ccfcd5>Objective-C</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><p><code>Objective-C</code> 语言里的拷贝就是对象拷贝，即创建一个跟之前的实例对象一模一样的对象。一般来说数据模型类是需要支持拷贝的。<code>Objective-C</code> 里拷贝又分为浅拷贝（<code>shallow-copy</code>）和深拷贝（<code>deep-copy</code>）。</p> <h1 id="浅拷贝和深拷贝区别"><a href="#浅拷贝和深拷贝区别" class="header-anchor">#</a> 浅拷贝和深拷贝区别</h1> <p>浅拷贝只是复制一下对象指针，但是拷贝前和拷贝后的对象指针均指向同一内存区域，只不过是对象的内存引用计数加一。
+深拷贝为拷贝前和拷贝后的对象指针指向不同的内存区域，即会创建一个新的对象。
+下图比较直观清楚。
+<img src="/assets/img/Jietu20180305-184629.fe8c5a9b.png" alt="Jietu20180305-184629"></p> <p>一个非常容易产生的误区就是，遵从了 <code>NSCopying</code> 协议的对象都会执行深拷贝。其实不然，<code>Foundation</code> 框架里大部分类执行的还是浅拷贝。比如 <code>NSString</code> 等。举个例子：</p> <div class="language- extra-class"><pre class="language-text"><code>NSString *str = [NSString stringWithFormat:@&quot;%@&quot;,@&quot;hello&quot;];
+NSString *copyStr = [str copy];
+NSLog(@&quot;str = %p,copyStr = %p&quot;,str ,copyStr);
+---
+&gt; str = 0x6f6c6c656855,copyStr = 0x6f6c6c656855
+&gt; str 在 copy 前后指向的内存地址都一模一样。
+</code></pre></div><p>还有一点注意的是，虽然有浅拷贝和深拷贝的概念，<strong>但是并没有专门定义深拷贝的协议</strong>。这点很关键，这意味着除非有文档是写用深拷贝实现 <code>NSCopying</code> 协议的，否则深拷贝的实现都是需要开发者自己去手写实现，而不能依赖于系统框架的实现。</p> <h1 id="copy-实例方法和-nscopying-协议"><a href="#copy-实例方法和-nscopying-协议" class="header-anchor">#</a> Copy 实例方法和 NSCopying 协议</h1> <p><code>NSObject</code> 有名为 <code>copy</code> 和 <code>mutableCopy</code> 的实例方法。</p> <div class="language- extra-class"><pre class="language-text"><code>- (id)copy;
+- (id)mutableCopy;
+</code></pre></div><p><code>NSCopying</code> 协议的方法为 <code>-(id)copyWithZone:(nullable NSZone *)zone</code>。（<code>zone</code> 目前没有任何意义）</p> <div class="language- extra-class"><pre class="language-text"><code>@protocol NSCopying
+- (id)copyWithZone:(nullable NSZone *)zone;
+@end
+</code></pre></div><p>这个实例方法和协议方法有啥关联呢？其实调用 <code>NSObject</code> 的 <code>copy</code> 实例方法就是调用 <code>NSCopying</code> 协议约定的 <code>copyWithZone</code> 方法。同理的，调用 <code>NSObject</code> 的 <code>mutableCopy</code> 实例方法就是调用 <code>NSMutableCopying</code> 协议的 <code>mutableCopyWithZone</code> 方法。</p> <p>需要注意的是，因为 <code>NSObject</code> 类并不支持 <code>NSCopying</code> 协议，所以继承 <code>NSObject</code> 的子类如果不实现 <code>NSCopying</code> 协议的 <code>copyWithZone</code> 方法会导致应用异常。 见下面 <code>demo</code></p> <div class="language- extra-class"><pre class="language-text"><code>@interface FRModel : NSObject
+@end
+@implementation FRModel
+@end
+---
+FRModel *model = [[FRModel alloc] init];
+[model copy];
+&gt; -[FRModel copyWithZone:]: unrecognized selector sent to instance 0x1004004c0
+</code></pre></div><blockquote><p><code>copy</code> <a href="https://developer.apple.com/documentation/objectivec/nsobject/1418807-copy?language=objc#" target="_blank" rel="noopener noreferrer">API 说明<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>
+Returns the object returned by copyWithZone:.</p></blockquote> <p>因为 <code>NSObject</code> 并没有实现 <code>NSCopying</code> 协议，即没有实现 <code>copyWithZone:</code> 方法，所以 <code>FRModel</code> 需要单独实现 <code>copyWithZone:</code> 方法。有一个误区是子类直接复写 <code>copy</code> 方法，这是不正确的操作方式，要避免。</p> <h1 id="copy-和-mutablecopy"><a href="#copy-和-mutablecopy" class="header-anchor">#</a> Copy 和 MutableCopy</h1> <p>上面说了 <code>NSObject</code> 有 <code>copy</code> 和 <code>mutableCopy</code> 两个实例方法。对应的也有两个协议， <code>NSCopying(copyWithZone:)</code> 和 <code>NSMutableCopying(mutableCopyWithZone:)</code>。虽然名字比较像但是这是两个不同的类，即如果你的类只实现了 <code>NSCopying</code> 协议，这时候给你发 <code>mutableCopy</code> 方法的话还是照样会异常，这两个也没有任何包含关系，把这两个类理解为单独的协议就好了。</p> <div class="language- extra-class"><pre class="language-text"><code>FRModel *model = [[FRModel alloc] init];
+model.name = @&quot;Frank&quot;;
+FRModel *copyModel = [model mutableCopy];
+NSLog(@&quot;model = %p,copymodel = %p&quot;,model,copyModel);
+NSLog(@&quot;model.name = %p,copymodel.name = %p&quot;,model.name,copyModel.name);
+---
+&gt; FRCopyDemo *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '-[FRModel mutableCopyWithZone:]: unrecognized selector sent to instance 0x100532040'
+</code></pre></div><h2 id="什么时候用-copy-什么时候用-mutablecopy"><a href="#什么时候用-copy-什么时候用-mutablecopy" class="header-anchor">#</a> 什么时候用 Copy 什么时候用 MutableCopy?</h2> <p>我们可以看下 <code>NSMutableCopying</code> 的<a href="https://developer.apple.com/documentation/foundation/nsmutablecopying?language=objc" target="_blank" rel="noopener noreferrer">协议说明<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <blockquote><p>The <code>NSMutableCopying</code> protocol declares a method for providing mutable copies of an object.
+Only classes that define an “immutable vs. mutable” distinction should adopt this protocol. Classes that don’t define such a distinction should adopt <code>NSCopying</code> instead.
+<code>NSMutableCopying</code> 声明了提供可对象可变副本的方法，只有区分可变和不可变的类应该遵守这个协议，不区分可变不尅版的话就直接用 NSCopying 方法就好了。</p></blockquote> <p>举个例子，我们日常使用的包括可变类型的类是 <code>NSString(NSMutableString)</code>，<code>NSArray(NSMutableArray)</code>，<code>NSDictionary(NSMutableDictionary)</code>以及<code>NSSet(NSMutableSet)</code> 这些类都是同时遵守了 <code>NSCopying</code> 和 <code>NSMutableCopying</code> 协议的。一般来说，我们自己用到的类很少有是可变类型的，所以也很少看到有自己的类实现 <code>NSMutableCopying</code> 协议。</p> <p>如果要实现的话基本遵守如下原则：</p> <ol><li>向可变(<code>mutable</code>)或者不可变(<code>immutable</code>)对象发送 <code>copy</code> 消息，得到的都是不可变(<code>immutable</code>)对象。</li> <li>向可变(<code>mutable</code>)或者不可变(<code>immutable</code>)对象发送 <code>mutableCopy</code> 消息，得到的都是可变(<code>mutable</code>)对象。
+举个例子验证一下</li></ol> <div class="language- extra-class"><pre class="language-text"><code>NSString *str = [NSString stringWithFormat:@&quot;%@&quot;,@&quot;hello&quot;];
+NSMutableString *copyStr = [str mutableCopy]; //得到可变对象.
+[copyStr appendString:@&quot; world&quot;];
+NSLog(@&quot;str = %p,copyStr = %p&quot;,str ,copyStr);
+NSLog(@&quot;str class = %@,copyStr class = %@&quot;,NSStringFromClass([str class]) ,NSStringFromClass([copyStr class]));
+NSLog(@&quot;str = %@,copyStr = %@&quot;,str ,copyStr);
+---
+&gt; FRCopyDemo str = 0x6f6c6c656855, copyStr = 0x10044a960
+&gt; FRCopyDemo str class = NSTaggedPointerString, copyStr class = __NSCFString
+&gt; FRCopyDemo str = hello, copyStr = hello world
+</code></pre></div><p>通过输出结果基本上验证了以上的结论。
+这儿还有一点比较有意思的事儿是，关于 <code>mutableCopy</code> 和深拷贝的关系。我们看到 <code>mutableCopy</code> 之后对象的指针发生了变化，内容并没有发生变化。但其实对象指针类型已经发生了变化。所以跟我们之前说的拷贝多少还是有区别的（正常的拷贝指针类型是不会发生变化的）。只要搞清楚这些不同的概念，就能理解这些概念的区别所在。</p> <h1 id="怎样让我们的对象支持-copy"><a href="#怎样让我们的对象支持-copy" class="header-anchor">#</a> 怎样让我们的对象支持 copy</h1> <p>完整的回答应该是：让类实现 <code>NSCopying</code> 协议里的 <code>copyWithZone</code>: 方法，如果对象是可变的应该同时实现 <code>NSMutableCopying</code> 的 <code>mutableCopyWithZone:</code> 方法。</p> <h1 id="copywithzone-方法的最佳实践"><a href="#copywithzone-方法的最佳实践" class="header-anchor">#</a> copyWithZone: 方法的最佳实践</h1> <p>一般开发者自己实现 <code>copyWithZone:</code> 方法的时候通常都是实现深拷贝，而非浅拷贝。因为浅拷贝确实没啥好实现的。深拷贝的实现需要考虑其父类是否也遵守了 <code>NSCopying</code> 协议，实现了 <code>copyWithZone:</code> 方法。
+比如继承自 <code>NSObject</code> 的 <code>FRModel</code> 类按如下方式实现 <code>copyWithZone:</code> 方法，这样显然是会异常的（实际上连编译都不会编译过去）。</p> <div class="language- extra-class"><pre class="language-text"><code>@interface FRModel : NSObject&lt;NSCopying&gt;
+@end
+@implementation FRModel
+- (id)copyWithZone:(NSZone *)zone {
+    FRModel *frmodel = [[super allocWithZone:zone] init];
+    return frmodel;
+}
+@end
+</code></pre></div><p>稍作修改，如果父类没有实现的话子类直接重新创建一个就好了</p> <div class="language- extra-class"><pre class="language-text"><code>@interface FRModel : NSObject&lt;NSCopying&gt;
+@end
+@implementation FRModel
+- (id)copyWithZone:(NSZone *)zone {
+    FRModel *frmodel = [[[self class] allocWithZone:zone] init];
+    return frmodel;
+}
+@end
+</code></pre></div><p>如果该类还有属性或者成员变量的话，可以直接对成员变量执行 <code>copy</code> 操作。参考如下 demo:</p> <div class="language- extra-class"><pre class="language-text"><code>@interface FRModel : NSObject&lt;NSCopying&gt;
+@property (nonatomic,strong) NSString *name;
+@end
+@implementation FRModel
+- (id)copyWithZone:(NSZone *)zone {
+    FRModel *frmodel = [[FRModel allocWithZone:zone] init];
+    if (frmodel) { frmodel.name = [_name copyWithZone:zone]; }
+    return frmodel;
+}
+@end
+
+FRModel *model = [[FRModel alloc] init];
+model.name = @&quot;Frank&quot;;
+FRModel *copyModel = [model copy];
+NSLog(@&quot;model = %p,copymodel = %p&quot;,model,copyModel);
+NSLog(@&quot;model.name = %p,copymodel.name = %p&quot;,model.name,copyModel.name);
+---
+&gt; FRCopyDemo model = 0x102803520,copymodel = 0x102803530
+&gt; FRCopyDemo model.name = 0x1000010d0,copymodel.name = 0x1000010d0
+</code></pre></div><p>注意因为 <code>NSString</code> 类型本身 <code>copyWithZone:</code> 属性为浅拷贝，所以最后输出结果两个类的 <code>name</code> 属性的指针指向相同。</p> <p><a href="https://stackoverflow.com/questions/9907154/best-practice-when-implementing-copywithzone" target="_blank" rel="noopener noreferrer">Best practice when implementing copywithzone<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h1 id="集合类型拷贝"><a href="#集合类型拷贝" class="header-anchor">#</a> 集合类型拷贝</h1> <p><code>Foundation</code> 框架中所有集合类型在默认情况下都执行浅拷贝，也就是说，只拷贝容器对象本身，而不复制其中数据。这样做的原因在于，容器内的对象未必能拷贝，而且调用者也未必想在拷贝容器时一并拷贝其中每一个对象。</p> <p>集合类型的浅拷贝和深拷贝的概念和普通对象的深浅拷贝略有不同。</p> <ol><li>集合类型的浅拷贝是指，当执行浅拷贝的时候，原始集合类型里的对象都收到一个 <code>retain</code> 消息，对象指针被复制到新的集合类型里。</li> <li>集合类型的深拷贝是指，当执行深拷贝的时候，原始集合里的对象都会收到一个 <code>copyWithZone:</code>，即集合里的对象需要实现 <code>NSCopying</code> 协议来实现深拷贝。如果集合里的对象并没有实现 <code>NSCopying</code> 则程序会异常。
+如图所示
+<img src="/assets/img/15203089948766.7b7bddcc.jpg" alt="15203089948766">
+浅拷贝 demo:</li></ol> <div class="language- extra-class"><pre class="language-text"><code>NSObject *obj = [[NSObject alloc] init];
+NSArray *arr = [NSArray arrayWithObject:obj];
+NSArray *copyArr = [[NSArray alloc] initWithArray:arr copyItems:NO];
+NSLog(@&quot;arr = %p,copyArr = %p&quot;,arr ,copyArr);
+NSLog(@&quot;arr model = %p,copyArr model = %p&quot;,[arr objectAtIndex:0],[copyArr objectAtIndex:0]);
+---
+&gt; FRCopyDemo arr = 0x100462b40,copyArr = 0x100461400
+&gt; FRCopyDemo arr model = 0x100400640,copyArr model = 0x100400640
+</code></pre></div><p>里面使用了 <code>initWithArray:copyItems:</code> 这个方法，传入 NO 即为浅拷贝。通过打印日志可以看到集合对象指针虽然发生了变化，但是集合内部元素的对象指针还是指向同样的内存区域。</p> <p>深拷贝 demo: (将 <code>initWithArray:copyItems:</code> 方法第二个参数传入 YES 即为深拷贝)</p> <div class="language- extra-class"><pre class="language-text"><code>NSObject *obj = [[NSObject alloc] init];
+NSArray *arr = [NSArray arrayWithObject:obj];
+NSArray *copyArr = [[NSArray alloc] initWithArray:arr copyItems:YES];
+NSLog(@&quot;arr = %p,copyArr = %p&quot;,arr ,copyArr);
+NSLog(@&quot;arr model = %p,copyArr model = %p&quot;,[arr objectAtIndex:0],[copyArr objectAtIndex:0]);
+---
+&gt; FRCopyDemo -[NSObject copyWithZone:]: unrecognized selector sent to instance 0x100688490
+&gt; FRCopyDemo *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '-[NSObject copyWithZone:]: unrecognized selector sent to instance 0x100688490'
+</code></pre></div><p>因为 <code>NSObject</code> 没有实现 <code>NSCopying</code> 协议，所以集合类型深拷贝时，集合元素 <code>NSObject</code> 对象收到 <code>copyWithZone:</code> 之后异常了。我们将 NSObject 类型修改为 <code>NSMutableString</code> 再次运行</p> <div class="language- extra-class"><pre class="language-text"><code>NSMutableString *obj = [NSMutableString stringWithFormat:@&quot;hello world&quot;];
+NSArray *arr = [NSArray arrayWithObject:obj];
+NSArray *copyArr = [[NSArray alloc] initWithArray:arr copyItems:YES];
+NSLog(@&quot;arr = %p,copyArr = %p&quot;,arr ,copyArr);
+NSLog(@&quot;arr model = %p,copyArr model = %p&quot;,[arr objectAtIndex:0],[copyArr objectAtIndex:0]);
+---
+&gt; FRCopyDemo arr = 0x100406dc0,copyArr = 0x100403fb0
+&gt; FRCopyDemo arr model = 0x100406780,copyArr model = 0x100405260
+</code></pre></div><p>可以看到集合内的元素执行了不同的内存地址，因为 <code>NSMutableString</code> 收到 <code>copyWithZone:</code> 消息会生成一个不可变的 <code>NSString</code> 对象。
+<code>initWithArray:copyItems:</code> <a href="https://developer.apple.com/documentation/foundation/nsarray/1408557-initwitharray?language=objc#" target="_blank" rel="noopener noreferrer">API 说明<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <blockquote><p><code>copyItems:</code> 参数 <code>flag</code>
+If <code>YES</code>, each object in array receives a <code>copyWithZone:</code> message to create a copy of the object—objects must conform to the <code>NSCopying</code> protocol. In a managed memory environment, this is instead of the retain message the object would otherwise receive. The object copy is then added to the returned array.
+If <code>NO</code>, then in a managed memory environment each object in array simply receives a <code>retain</code> message when it is added to the returned array.</p></blockquote> <h2 id="单层复制和完全复制"><a href="#单层复制和完全复制" class="header-anchor">#</a> 单层复制和完全复制？</h2> <p>思考这样一种情况，即数组套数组，这种深拷贝是怎么做？
+我们刚使用 <code>initWithArray:copyItems:</code> 方法进行的拷贝只是元素拷贝。即如果是两层数组的话，内层数组里的元素其实并没有机会执行 <code>copyWithZone:</code> 方法。苹果官方称这种拷贝为 <code>one-level-deep copy</code>，即单层复制。</p> <p>完全复制是指，不管嵌套多少层集合，每层的的元素都有机会执行 <code>copyWithZone:</code> 方法。</p> <h1 id="copy-和-nscoding"><a href="#copy-和-nscoding" class="header-anchor">#</a> Copy 和 NSCoding</h1> <p>如何实现完全复制呢？
+让对象实现 <code>NSCoding</code> 协议，然后将对象归档到文件里再从文件中归档出来，即需要进行两次 I/O 操作。
+举个例子：</p> <div class="language- extra-class"><pre class="language-text"><code>//NSArray 和 NSString 都支持 NSCoding 协议
+NSString *path = @&quot;/Users/xiushan.fan/Desktop/arrfile&quot;;
+NSArray *subArray1 = @[[NSMutableString stringWithString:@&quot;1&quot;]];
+NSArray *subArray2 = @[[NSMutableString stringWithString:@&quot;2&quot;]];
+NSArray *wholeArr = @[subArray1,subArray2];
+[NSKeyedArchiver archiveRootObject:wholeArr toFile:path];
+NSLog(@&quot;wholeArr = %@,wholeArr = %p,subArr1 = %p,elemement = %p&quot;,wholeArr,wholeArr,[wholeArr objectAtIndex:0],[[wholeArr objectAtIndex:0] objectAtIndex:0]);
+NSArray *unarchivedArray = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+//NSArray *unarchivedArray = [[NSArray alloc] initWithArray:wholeArr copyItems:YES];
+NSLog(@&quot;unarchivedArray = %@, unarchivedArray = %p ,subArr1 = %p,elemement = %p&quot;,unarchivedArray,unarchivedArray,[unarchivedArray objectAtIndex:0],[[unarchivedArray objectAtIndex:0] objectAtIndex:0]);
+---
+&gt; FRCopyDemo wholeArr = ( ( 1 ),( 2 ) ),wholeArr = 0x100422c60,subArr1 = 0x100406930,elemement = 0x100422580
+&gt; FRCopyDemo unarchivedArray = (
+(1 ), ( 2 )), unarchivedArray = 0x1004273a0 ,subArr1 = 0x1004039c0,elemement = 0x100424230
+</code></pre></div><p>可以看到 <code>NSCoding</code> 进行转化之后所有的元素的内存地址均不相同。</p> <h1 id="copy-和属性"><a href="#copy-和属性" class="header-anchor">#</a> Copy 和属性</h1> <p>被 <code>copy attribute</code> 修饰的属性，在被赋值的时候，新值其实是会收到一个 <code>copyWithZone:</code> 的消息</p> <div class="language- extra-class"><pre class="language-text"><code>@interface FRObj : NSObject&lt;NSCopying&gt;
+@end
+@implementation FRObj
+- (id)copyWithZone:(NSZone *)zone {
+    FRObj *obj = [[FRObj allocWithZone:zone] init];
+    NSLog(@&quot;FRObj copy with zone self %@&quot;,self);
+    return obj;
+}
+@end
+@interface FRModel : NSObject&lt;NSCopying&gt;
+@property (nonatomic,copy) FRObj *name;
+@end
+
+FRModel *model = [[FRModel alloc] init];
+FRObj *obj = [[FRObj alloc] init];
+NSLog(@&quot;obj %@&quot;,obj);
+model.name = obj;
+---
+&gt; FRCopyDemo obj &lt;FRObj: 0x1004001c0&gt;
+&gt; FRCopyDemo FRObj copy with zone self &lt;FRObj: 0x1004001c0&gt;
+</code></pre></div><p>可以看到 <code>FRObj</code> 赋值的时候自己收到了一条 <code>copyWithZone:</code> 的消息。
+具体的底层实现可以参考 <a href="https://fanxiushan.github.io/2018/01/09/%E5%B1%9E%E6%80%A7-attribute-%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener noreferrer">属性 attribute 总结<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 里的 <code>copy attribute</code> 部分</p> <h1 id="一些-qa"><a href="#一些-qa" class="header-anchor">#</a> 一些 QA</h1> <p><strong>Q: copy 关键字一般在哪些场景下使用？</strong>
+A: 1.<code>NSString/NSArray/NSDictionary</code> 这些类使用，因为这些类都有对应的可变类型。 2. MRC 下修饰 <code>block</code> 属性需要使用 <code>copy</code>。ARC 下可以使用 <code>copy/strong</code> 去修饰 <code>block</code>，一般也使用 <code>copy</code>,给人感觉比较直观。</p> <blockquote><p>这个的对应的问题是，<code>NSString</code> 使用什么修饰符修饰？为什么？答案是使用 <code>copy</code> 修饰符，原因是 <code>NSString</code> 用 <code>strong</code> 修饰符的时候如果指向自己的可变类型，当可变类型内容修改的时候，<code>NSString</code> 属性也会跟着一起修改，这不是我们希望看到的。同时根据刚才的分析，使用 <code>copy</code> 修饰并不会给 <code>NSString</code> 造成额外的负担，因为仅仅是浅拷贝而已。</p></blockquote> <p><strong>Q: 这个写法会出什么问题： @property (copy) NSMutableArray *array;</strong>
+A: 当给 <code>array</code> 赋值的时候可变对象会变为不可变对象，其实是向被赋值的对象发送了一个 <code>copy</code> 消息， <code>copy</code> 的默认实现就是将可变对象变为不可变对象。属性里也没有 <code>mutablecopy</code> 这种修饰符，所以只能手动发送 <code>mutableCopy</code> 消息达到目的。
+<a href="https://stackoverflow.com/questions/46211849/property-of-mutable-type-nsmutabledictionary-has-copy-attribute-an-immutabl" target="_blank" rel="noopener noreferrer">Property of mutable type 'NSMutableDictionary' has 'copy' attribute; an immutable object will be stored instead<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><strong>Q: 如何让自己的类用 copy 修饰符？如何重写带 copy 关键字的 setter？</strong>
+A: 实现 <code>NSCopying</code> 协议，实现 <code>copyWithZone:</code> 方法. 直接发送 <code>copy</code> 消息就好了</p> <h1 id="参考地址"><a href="#参考地址" class="header-anchor">#</a> 参考地址</h1> <p><a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html#//apple_ref/doc/uid/TP40010162-SW3" target="_blank" rel="noopener noreferrer">Collections Programming Topics - Copying Collections<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCopying.html" target="_blank" rel="noopener noreferrer">Cocoa Core Competencies - Object copying<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>
+Effective Objective-C 2.0 - 理解 NSCopying 协议
+<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011i" target="_blank" rel="noopener noreferrer">Advanced Memory Management Programming Guide - About Memory Management<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://www.zybuluo.com/MicroCai/note/50592" target="_blank" rel="noopener noreferrer">iOS 集合的深复制与浅复制<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="https://juejin.im/entry/581c6c2aa0bb9f0058a26f81" target="_blank" rel="noopener noreferrer">Objective-C copy，看我就够了<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> <a href="http://zhangbuhuai.com/copy-in-objective-c/" target="_blank" rel="noopener noreferrer">Objective-C copy 那些事儿<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <footer><!----> <hr> <!----></footer></article> <div class="sticker vuepress-toc"><div class="vuepress-toc-item vuepress-toc-h2 active"><a href="#什么时候用-copy-什么时候用-mutablecopy" title="什么时候用 Copy 什么时候用 MutableCopy?">什么时候用 Copy 什么时候用 MutableCopy?</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#单层复制和完全复制" title="单层复制和完全复制？">单层复制和完全复制？</a></div></div></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8></ul></div></footer></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.2cedb1d8.js" defer></script><script src="/assets/js/29.309f71c0.js" defer></script><script src="/assets/js/3.e78f3171.js" defer></script><script src="/assets/js/40.726f0f90.js" defer></script>
+  </body>
+</html>
