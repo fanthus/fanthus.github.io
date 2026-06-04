@@ -1,0 +1,1 @@
+var e=`/assets/wechat_qrcode-DUenzCUo.png`;export{e as t};
